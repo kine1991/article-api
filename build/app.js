@@ -4,7 +4,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-const body_parser_1 = __importDefault(require("body-parser"));
 const morgan_1 = __importDefault(require("morgan"));
 const express_rate_limit_1 = __importDefault(require("express-rate-limit"));
 const helmet_1 = __importDefault(require("helmet"));
@@ -29,7 +28,10 @@ const limiter = express_rate_limit_1.default({
 });
 app.use('/api', limiter);
 // bodyParser
-app.use(body_parser_1.default.urlencoded({ extended: true }));
+// app.use(bodyParser.urlencoded({ extended: true }));
+// Body parser, reading data from body into req.body
+app.use(express_1.default.json({ limit: '10kb' })); // for parsing application/json
+app.use(express_1.default.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
 // Data sanitization against NoSQL query injection
 app.use(express_mongo_sanitize_1.default());
 // Data sanitization against XSS

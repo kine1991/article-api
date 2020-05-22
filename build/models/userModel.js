@@ -51,7 +51,7 @@ const userSchema = new mongoose_1.default.Schema({
         select: false
     }
 });
-// userSchema.pre<IUser>('save', async function(next) {
+// userSchema.pre<UserDoc>('save', async function(next) {
 //   this.password;
 //   // Only run this function if password was actually modified
 //   if (!this.isModified('password')) return next();

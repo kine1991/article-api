@@ -30,7 +30,11 @@ const limiter = rateLimit({
 app.use('/api', limiter);
 
 // bodyParser
-app.use(bodyParser.urlencoded({ extended: true }));
+// app.use(bodyParser.urlencoded({ extended: true }));
+// Body parser, reading data from body into req.body
+app.use(express.json({ limit: '10kb' })); // for parsing application/json
+app.use(express.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
+
 
 // Data sanitization against NoSQL query injection
 app.use(mongoSanitize());

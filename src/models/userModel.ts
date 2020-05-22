@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 import validator from 'validator';
 const bcrypt = require('bcryptjs');
 
-export interface IUser extends mongoose.Document {
+export interface UserDoc extends mongoose.Document {
   name: string;
   email: string;
   photo: string;
@@ -16,7 +16,9 @@ export interface IUser extends mongoose.Document {
   active: boolean
 }
 
-
+interface UserModel extends mongoose.Model<UserDoc> {
+  build(): UserDoc;
+}
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -47,7 +49,7 @@ const userSchema = new mongoose.Schema({
     required: [true, 'Please confirm your password'],
     validate: {
       // This only works on CREATE and SAVE!!!
-      validator: function<IUser>(el: string): boolean {
+      validator: function<UserDoc>(el: string): boolean {
         // @ts-ignore
         return el === this.password;
       },
@@ -64,7 +66,7 @@ const userSchema = new mongoose.Schema({
   }
 });
 
-// userSchema.pre<IUser>('save', async function(next) {
+// userSchema.pre<UserDoc>('save', async function(next) {
 //   this.password;
 //   // Only run this function if password was actually modified
 //   if (!this.isModified('password')) return next();
@@ -79,7 +81,7 @@ const userSchema = new mongoose.Schema({
 
 // this.get('password')
 
-userSchema.pre<IUser>('save', async function(next) {
+userSchema.pre<UserDoc>('save', async function(next) {
   // Only run this function if password was actually modified
   if (!this.isModified('password')) return next();
 
@@ -91,7 +93,7 @@ userSchema.pre<IUser>('save', async function(next) {
   next();
 });
 
-userSchema.pre<IUser>('save', function(next) {
+userSchema.pre<UserDoc>('save', function(next) {
   if (!this.isModified('password') || this.isNew) return next();
 
   this.passwordChangedAt = Date.now() - 1000;
@@ -112,6 +114,6 @@ userSchema.methods.correctPassword = async function(
   return await bcrypt.compare(candidatePassword, userPassword);
 };
 
-const User = mongoose.model<IUser>('User', userSchema);
+const User = mongoose.model<UserDoc, UserModel>('User', userSchema);
 
 export default User;
