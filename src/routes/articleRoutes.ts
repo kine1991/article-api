@@ -8,6 +8,9 @@ router.route('/')
   .get(articleController.getArticles)
   .post(articleController.createArticle)
 
+router.route('/:id')
+  .get(articleController.getArticle)
+
 // router.get('/', (req, res) => {
 //   res.send('hi there! articles');
 // });

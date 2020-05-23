@@ -12,6 +12,8 @@ const express_mongo_sanitize_1 = __importDefault(require("express-mongo-sanitize
 const xss_clean_1 = __importDefault(require("xss-clean"));
 const userRoutes_1 = __importDefault(require("./routes/userRoutes"));
 const articleRoutes_1 = __importDefault(require("./routes/articleRoutes"));
+const errorController_1 = __importDefault(require("./controllers/errorController"));
+const not_found_page_1 = require("./utils/errors/not-found-page");
 const app = express_1.default();
 // 1) GLOBAL MIDDLEWARES
 // Set security HTTP headers
@@ -39,4 +41,20 @@ app.use(xss_clean_1.default());
 // ROUTES
 app.use('/api/v1/users', userRoutes_1.default);
 app.use('/api/v1/articles', articleRoutes_1.default);
+// app.all('*', async (req: Request, res: Response, next: NextFunction) => {
+//   res.status(404).json({
+//     message: 'This route not found'
+//   });
+// });
+app.all('*', async (req, res, next) => {
+    throw new not_found_page_1.NotFoundError();
+});
+// app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+//   console.error('err@', err.message);
+//   res.status(200).json({
+//     status: 'error',
+//     message: 'message'
+//   })
+// });
+app.use(errorController_1.default);
 exports.default = app;

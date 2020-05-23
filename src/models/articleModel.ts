@@ -23,6 +23,10 @@ const articleSchema = new mongoose.Schema({
     min: [1, 'Priority should be greater than or equal to 1'],
     max: [10, 'Priority should be less than or equal to 10'],
   },
+  private: {
+    type: Boolean,
+    default: false
+  },
   user: String,
   createdAt: {
     type: Date,
@@ -34,6 +38,14 @@ const articleSchema = new mongoose.Schema({
   },
   imageUrl: String,
   imagesUrl: [String]
+}, {
+  toJSON: {
+    transform(doc, ret) {
+      ret.id = ret._id;
+      delete ret._id;
+      delete ret.__v
+    },
+  },
 });
 
 const Article = mongoose.model('Article', articleSchema);

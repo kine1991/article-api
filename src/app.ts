@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Request, Response, NextFunction, ErrorRequestHandler } from 'express';
 import bodyParser from 'body-parser';
 import morgan from 'morgan';
 import rateLimit from 'express-rate-limit';
@@ -9,6 +9,8 @@ import xss from 'xss-clean';
 
 import userRouter from './routes/userRoutes';
 import articleRouter from './routes/articleRoutes';
+import globalErrorHandler from './controllers/errorController';
+import { NotFoundError } from './utils/errors/not-found-page';
 
 const app = express();
 
@@ -46,6 +48,24 @@ app.use(xss());
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/articles', articleRouter);
 
+// app.all('*', async (req: Request, res: Response, next: NextFunction) => {
+//   res.status(404).json({
+//     message: 'This route not found'
+//   });
+// });
 
+app.all('*', async (req: Request, res: Response, next: NextFunction) => {
+  throw new NotFoundError();
+});
+
+// app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+//   console.error('err@', err.message);
+//   res.status(200).json({
+//     status: 'error',
+//     message: 'message'
+//   })
+// });
+
+app.use(globalErrorHandler);
 
 export default app;
