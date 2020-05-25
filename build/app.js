@@ -41,20 +41,8 @@ app.use(xss_clean_1.default());
 // ROUTES
 app.use('/api/v1/users', userRoutes_1.default);
 app.use('/api/v1/articles', articleRoutes_1.default);
-// app.all('*', async (req: Request, res: Response, next: NextFunction) => {
-//   res.status(404).json({
-//     message: 'This route not found'
-//   });
-// });
 app.all('*', async (req, res, next) => {
-    throw new not_found_page_1.NotFoundError();
+    next(new not_found_page_1.NotFoundError());
 });
-// app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-//   console.error('err@', err.message);
-//   res.status(200).json({
-//     status: 'error',
-//     message: 'message'
-//   })
-// });
 app.use(errorController_1.default);
 exports.default = app;

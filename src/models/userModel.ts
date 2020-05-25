@@ -1,19 +1,20 @@
-import crypto from 'crypto';
+// import crypto from 'crypto';
 import mongoose from 'mongoose';
 import validator from 'validator';
-const bcrypt = require('bcryptjs');
+import bcrypt from 'bcryptjs';
+// const bcrypt = require('bcryptjs');
 
 export interface UserDoc extends mongoose.Document {
   name: string;
   email: string;
-  photo: string;
-  role: string;
+  photo?: string;
+  role?: string;
   password: string;
-  passwordConfirm: string | undefined;
-  passwordChangedAt: Date | number;
-  passwordResetToken: string,
-  passwordResetExpires: Date,
-  active: boolean
+  passwordConfirm?: string | undefined;
+  passwordChangedAt?: Date | number;
+  passwordResetToken?: string,
+  passwordResetExpires?: Date,
+  active?: boolean
 }
 
 interface UserModel extends mongoose.Model<UserDoc> {
@@ -46,15 +47,15 @@ const userSchema = new mongoose.Schema({
   },
   passwordConfirm: {
     type: String,
-    required: [true, 'Please confirm your password'],
-    validate: {
-      // This only works on CREATE and SAVE!!!
-      validator: function<UserDoc>(el: string): boolean {
-        // @ts-ignore
-        return el === this.password;
-      },
-      message: 'Passwords are not the same!'
-    }
+    // required: [true, 'Please confirm your password'],
+    // validate: {
+    //   // This only works on CREATE and SAVE!!!
+    //   validator: function<UserDoc>(el: string): boolean {
+    //     // @ts-ignore
+    //     return el === this.password;
+    //   },
+    //   message: 'Passwords are not the same!'
+    // }
   },
   passwordChangedAt: Date,
   passwordResetToken: String,
@@ -64,6 +65,26 @@ const userSchema = new mongoose.Schema({
     default: true,
     select: false
   }
+}, {
+  toJSON: {
+    transform(doc, ret) {
+      ret.id = ret._id;
+      delete ret._id;
+      delete ret.__v
+    },
+  },
+});
+
+userSchema.pre<UserDoc>('save', async function(next) {
+  // Only run this function if password was actually modified
+  if (!this.isModified('password')) return next();
+
+  // Hash the password with cost of 12
+  this.password = await bcrypt.hash(this.password, 12);
+
+  // Delete passwordConfirm field
+  this.passwordConfirm = undefined;
+  next();
 });
 
 // userSchema.pre<UserDoc>('save', async function(next) {
@@ -81,38 +102,33 @@ const userSchema = new mongoose.Schema({
 
 // this.get('password')
 
-userSchema.pre<UserDoc>('save', async function(next) {
-  // Only run this function if password was actually modified
-  if (!this.isModified('password')) return next();
+// userSchema.pre<UserDoc>('save', async function(next) {
+//   // Only run this function if password was actually modified
+//   if (!this.isModified('password')) return next();
 
-  // Hash the password with cost of 12
-  this.password = await bcrypt.hash(this.password, 12);
+//   // Hash the password with cost of 12
+//   this.password = await bcrypt.hash(this.password, 12);
 
-  // Delete passwordConfirm field
-  this.passwordConfirm = undefined;
-  next();
-});
+//   // Delete passwordConfirm field
+//   this.passwordConfirm = undefined;
+//   next();
+// });
 
-userSchema.pre<UserDoc>('save', function(next) {
-  if (!this.isModified('password') || this.isNew) return next();
+// userSchema.pre<UserDoc>('save', function(next) {
+//   if (!this.isModified('password') || this.isNew) return next();
 
-  this.passwordChangedAt = Date.now() - 1000;
-  next();
-});
-
-// userSchema.pre(/^find/, function(next) {
-//   // this points to the current query
-//   this.find({ active: { $ne: false } });
+//   this.passwordChangedAt = Date.now() - 1000;
 //   next();
 // });
 
 
-userSchema.methods.correctPassword = async function(
-  candidatePassword: string,
-  userPassword: string
-) {
-  return await bcrypt.compare(candidatePassword, userPassword);
-};
+
+// userSchema.methods.correctPassword = async function(
+//   candidatePassword: string,
+//   userPassword: string
+// ) {
+//   return await bcrypt.compare(candidatePassword, userPassword);
+// };
 
 const User = mongoose.model<UserDoc, UserModel>('User', userSchema);
 

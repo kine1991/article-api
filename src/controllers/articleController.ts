@@ -12,7 +12,6 @@ export const getArticles = catchAsync(async (req: Request, res: Response, next: 
 });
 
 export const getArticle = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-  console.log('req.params@', req.params.id);
   const article = await Article.findById(req.params.id);
   // console.log('article@', article);
 

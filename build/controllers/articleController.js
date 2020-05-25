@@ -14,7 +14,6 @@ exports.getArticles = catchAsync_1.default(async (req, res, next) => {
     });
 });
 exports.getArticle = catchAsync_1.default(async (req, res, next) => {
-    console.log('req.params@', req.params.id);
     const article = await articleModel_1.default.findById(req.params.id);
     // console.log('article@', article);
     if (!article) {
