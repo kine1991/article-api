@@ -1,9 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
 import mongoose from 'mongoose';
 
-import { NotFoundError } from '../utils/errors';
+import { NotFoundError, BadRequestError } from '../utils/errors';
 import User from '../models/userModel';
 import catchAsync from '../utils/catchAsync';
+// import { BadRequestError } from '../utils/errors/bad-request-error';
 
 export const getUsers = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
   const users = await User.find({});
@@ -16,13 +17,13 @@ export const getUsers = catchAsync(async (req: Request, res: Response, next: Nex
     }
   });
 });
-
 export const getUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
   // const isValidId = mongoose.Types.ObjectId.isValid(req.params.id)
   const user = await User.findOne({ _id: req.params.id});
 
   if (!user) {
-    throw new NotFoundError();
+    throw new BadRequestError(`This route is not found (_id: ${req.params.id})`);
+    // throw new NotFoundError();
   }
 
   res.status(200).json({

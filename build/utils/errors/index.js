@@ -12,3 +12,4 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 Object.defineProperty(exports, "__esModule", { value: true });
 __exportStar(require("./custom-error"), exports);
 __exportStar(require("./not-found-page"), exports);
+__exportStar(require("./bad-request-error"), exports);

@@ -9,17 +9,17 @@ const errorController = (err, req, res, next) => {
     }
     if (err.name === 'CastError') {
         // @ts-ignore
-        const message = `Not Found: ${err.path}: ${err.value}`;
+        const message = `This route is not found: (${err.path}: ${err.value})`;
         return res.status(404).json({
             errors: [{ message }]
         });
     }
-    console.error('@log (errorController)', err);
-    res.status(400).send({
-        errors: [{ message: err }]
-    });
+    console.error('@log (errorController)', err.name);
     // res.status(400).send({
-    //   errors: [{ message: 'Something went wrong' }]
+    //   errors: [{ message: err }]
     // })
+    res.status(400).send({
+        errors: [{ message: 'Something went wrong' }]
+    });
 };
 exports.default = errorController;

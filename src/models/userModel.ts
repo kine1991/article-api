@@ -87,48 +87,6 @@ userSchema.pre<UserDoc>('save', async function(next) {
   next();
 });
 
-// userSchema.pre<UserDoc>('save', async function(next) {
-//   this.password;
-//   // Only run this function if password was actually modified
-//   if (!this.isModified('password')) return next();
-
-//   // Hash the password with cost of 12
-//   this.password = await bcrypt.hash(this.password, 12);
-
-//   // Delete passwordConfirm field
-//   this.passwordConfirm = undefined;
-//   next();
-// });
-
-// this.get('password')
-
-// userSchema.pre<UserDoc>('save', async function(next) {
-//   // Only run this function if password was actually modified
-//   if (!this.isModified('password')) return next();
-
-//   // Hash the password with cost of 12
-//   this.password = await bcrypt.hash(this.password, 12);
-
-//   // Delete passwordConfirm field
-//   this.passwordConfirm = undefined;
-//   next();
-// });
-
-// userSchema.pre<UserDoc>('save', function(next) {
-//   if (!this.isModified('password') || this.isNew) return next();
-
-//   this.passwordChangedAt = Date.now() - 1000;
-//   next();
-// });
-
-
-
-// userSchema.methods.correctPassword = async function(
-//   candidatePassword: string,
-//   userPassword: string
-// ) {
-//   return await bcrypt.compare(candidatePassword, userPassword);
-// };
 
 const User = mongoose.model<UserDoc, UserModel>('User', userSchema);
 
