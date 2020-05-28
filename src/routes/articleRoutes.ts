@@ -1,12 +1,14 @@
 import express from 'express';
 
 import * as articleController from '../controllers/articleController';
+import * as authController from '../controllers/authController';
+
 
 const router = express.Router();
 
 router.route('/')
   .get(articleController.getArticles)
-  .post(articleController.createArticle)
+  .post(authController.protect, articleController.createArticle)
 
 router.route('/:id')
   .get(articleController.getArticle)

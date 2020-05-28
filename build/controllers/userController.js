@@ -22,7 +22,7 @@ exports.getUser = catchAsync_1.default(async (req, res, next) => {
     // const isValidId = mongoose.Types.ObjectId.isValid(req.params.id)
     const user = await userModel_1.default.findOne({ _id: req.params.id });
     if (!user) {
-        throw new errors_1.BadRequestError(`This route is not found (_id: ${req.params.id})`);
+        throw new errors_1.BadRequestError(`This route is not found (_id: ${req.params.id})`, 404);
         // throw new NotFoundError();
     }
     res.status(200).json({

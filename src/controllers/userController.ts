@@ -22,7 +22,7 @@ export const getUser = catchAsync(async (req: Request, res: Response, next: Next
   const user = await User.findOne({ _id: req.params.id});
 
   if (!user) {
-    throw new BadRequestError(`This route is not found (_id: ${req.params.id})`);
+    throw new BadRequestError(`This route is not found (_id: ${req.params.id})`, 404);
     // throw new NotFoundError();
   }
 

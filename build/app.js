@@ -37,10 +37,6 @@ app.use(express_1.default.json({ limit: '10kb' })); // for parsing application/j
 app.use(express_1.default.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
 // cookie
 app.use(cookie_parser_1.default());
-// app.use((req, res, next) => {
-//   console.log('req.cookies', req.cookies);
-//   next();
-// });
 // Data sanitization against NoSQL query injection
 app.use(express_mongo_sanitize_1.default());
 // Data sanitization against XSS

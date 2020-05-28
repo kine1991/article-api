@@ -25,7 +25,8 @@ exports.getArticle = catchAsync_1.default(async (req, res, next) => {
 });
 exports.createArticle = catchAsync_1.default(async (req, res, next) => {
     // console.log('@@@', req.body);
-    const newArticle = await articleModel_1.default.create(req.body);
+    // console.log('@@@2', req.user);
+    const newArticle = await articleModel_1.default.create({ ...req.body, user: req.user });
     res.status(201).json({
         article: newArticle
     });

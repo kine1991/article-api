@@ -24,10 +24,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const articleController = __importStar(require("../controllers/articleController"));
+const authController = __importStar(require("../controllers/authController"));
 const router = express_1.default.Router();
 router.route('/')
     .get(articleController.getArticles)
-    .post(articleController.createArticle);
+    .post(authController.protect, articleController.createArticle);
 router.route('/:id')
     .get(articleController.getArticle);
 // router.get('/', (req, res) => {

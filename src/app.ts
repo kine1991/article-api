@@ -1,6 +1,5 @@
 import express, { Request, Response, NextFunction, ErrorRequestHandler } from 'express';
 import bodyParser from 'body-parser';
-import cookieSession from 'cookie-session';
 import cookieParser from 'cookie-parser';
 import morgan from 'morgan';
 import rateLimit from 'express-rate-limit';
@@ -41,11 +40,6 @@ app.use(express.urlencoded({ extended: true })); // for parsing application/x-ww
 
 // cookie
 app.use(cookieParser())
-
-// app.use((req, res, next) => {
-//   console.log('req.cookies', req.cookies);
-//   next();
-// });
 
 // Data sanitization against NoSQL query injection
 app.use(mongoSanitize());

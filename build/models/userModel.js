@@ -51,6 +51,15 @@ const userSchema = new mongoose_1.default.Schema({
         },
     },
 });
+// Duplicate the ID field.
+userSchema.virtual('id').get(function () {
+    //@ts-ignore
+    return this._id.toHexString();
+});
+// Ensure virtual fields are serialised.
+userSchema.set('toJSON', {
+    virtuals: true
+});
 userSchema.pre('save', async function (next) {
     // Only run this function if password was actually modified
     if (!this.isModified('password'))

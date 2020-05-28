@@ -14,7 +14,7 @@ const errorController = (err, req, res, next) => {
             errors: [{ message }]
         });
     }
-    console.error('@log (errorController)', err.name);
+    console.error('@log (errorController)', err);
     // res.status(400).send({
     //   errors: [{ message: err }]
     // })

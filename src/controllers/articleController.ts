@@ -26,7 +26,8 @@ export const getArticle = catchAsync(async (req: Request, res: Response, next: N
 
 export const createArticle = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
   // console.log('@@@', req.body);
-  const newArticle = await Article.create(req.body);
+  // console.log('@@@2', req.user);
+  const newArticle = await Article.create({ ...req.body, user: req.user });
 
   res.status(201).json({
     article: newArticle

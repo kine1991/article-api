@@ -9,7 +9,7 @@ export interface UserDoc extends mongoose.Document {
   email: string;
   photo?: string;
   role?: string;
-  password: string;
+  password?: string;
   passwordConfirm?: string | undefined;
   passwordChangedAt?: Date | number;
   passwordResetToken?: string,
@@ -75,12 +75,23 @@ const userSchema = new mongoose.Schema({
   },
 });
 
+// Duplicate the ID field.
+userSchema.virtual('id').get(function(){
+  //@ts-ignore
+  return this._id.toHexString();
+});
+
+// Ensure virtual fields are serialised.
+userSchema.set('toJSON', {
+  virtuals: true
+});
+
 userSchema.pre<UserDoc>('save', async function(next) {
   // Only run this function if password was actually modified
   if (!this.isModified('password')) return next();
 
   // Hash the password with cost of 12
-  this.password = await bcrypt.hash(this.password, 12);
+  this.password = await bcrypt.hash(this.password!, 12);
 
   // Delete passwordConfirm field
   this.passwordConfirm = undefined;

@@ -31,7 +31,11 @@ const articleSchema = new mongoose_1.default.Schema({
         type: Boolean,
         default: false
     },
-    user: String,
+    user: {
+        // type: typeof mongoose.Schema.Types.ObjectId,
+        type: mongoose_1.default.Schema.ObjectId,
+        ref: 'User'
+    },
     createdAt: {
         type: Date,
         default: Date.now()
