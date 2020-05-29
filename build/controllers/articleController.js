@@ -10,7 +10,11 @@ const errors_1 = require("../utils/errors");
 exports.getArticles = catchAsync_1.default(async (req, res, next) => {
     const articles = await articleModel_1.default.find({});
     res.status(200).json({
-        articles
+        status: "success",
+        results: articles.length,
+        data: {
+            articles
+        }
     });
 });
 exports.getArticle = catchAsync_1.default(async (req, res, next) => {
@@ -20,7 +24,10 @@ exports.getArticle = catchAsync_1.default(async (req, res, next) => {
         throw new errors_1.NotFoundError();
     }
     res.status(200).json({
-        article: article
+        status: "success",
+        data: {
+            article
+        }
     });
 });
 exports.createArticle = catchAsync_1.default(async (req, res, next) => {
@@ -28,6 +35,9 @@ exports.createArticle = catchAsync_1.default(async (req, res, next) => {
     // console.log('@@@2', req.user);
     const newArticle = await articleModel_1.default.create({ ...req.body, user: req.user });
     res.status(201).json({
-        article: newArticle
+        status: "success",
+        data: {
+            article: newArticle
+        }
     });
 });

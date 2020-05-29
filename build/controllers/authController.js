@@ -84,17 +84,14 @@ exports.protect = async (req, res, next) => {
         if (!currentUser) {
             next(new bad_request_error_1.BadRequestError('The user belonging to this token does no longer exist.', 401));
         }
-        console.log(currentUser);
         req.user = currentUser;
         next();
     }
     catch (error) {
         if (error.name === 'JsonWebTokenError') {
-            console.log('@@@');
             next(new bad_request_error_1.BadRequestError('invalid token.', 401));
         }
-        console.log('@@@2');
         next(new bad_request_error_1.BadRequestError('Something went wrong', 500));
-        console.log('error@', error);
+        // console.log('error@', error);
     }
 };

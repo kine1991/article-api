@@ -98,16 +98,13 @@ export const protect = async (req: Request, res: Response, next: NextFunction) =
       next(new BadRequestError('The user belonging to this token does no longer exist.', 401));
     }
 
-    console.log(currentUser)
     req.user = currentUser;
     next();
   } catch (error) {
     if (error.name === 'JsonWebTokenError') {
-      console.log('@@@');
       next(new BadRequestError('invalid token.', 401));
     }
-    console.log('@@@2');
     next(new BadRequestError('Something went wrong', 500));
-    console.log('error@', error);
+    // console.log('error@', error);
   }
 };

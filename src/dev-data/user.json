@@ -1,0 +1,66 @@
+[
+  {
+    "_id": "5c8a1d5b0190b214360dc057",
+    "name": "Anna Belkina",
+    "email": "test1@mail.ru",
+    "role": "admin",
+    "photo": "https://sun9-8.userapi.com/c206624/v206624791/1331a5/sMHAYpZl0ik.jpg",
+    "password": "123456"
+  },
+  {
+    "_id": "5c8a1dfa2f8fb814b56fa181",
+    "name": "Alex Volf",
+    "email": "test2@mail.ru",
+    "role": "user",
+    "photo": "https://sun9-18.userapi.com/gBwLVgMw9IhhqDMCkwyrV6FVBgYlAAcYTmCzJg/LF1J4AGzZ08.jpg?ava=1",
+    "password": "123456"
+  },
+  {
+    "_id": "5c8a1e1a2f8fb814b56fa182",
+    "name": "Nikolay Belkin",
+    "email": "test3@mail.ru",
+    "role": "user",
+    "photo": "https://sun9-35.userapi.com/QuOvHQH6RkzcskGxtOHUZ3Fk2Z06Jfs77WD4Fw/xCEXV4YgOmo.jpg?ava=1",
+    "password": "123456"
+  },
+  {
+    "_id": "5c8a1ec62f8fb814b56fa183",
+    "name": "Ayla Cornell",
+    "email": "test4@mail.ru",
+    "role": "user",
+    "photo": "https://sun9-61.userapi.com/oI_DOXKmMSEB5b2KRduJfptNYSJFvJ4c9oKXcw/JiswpQ7A9Rc.jpg?ava=1",
+    "password": "123456"
+  },
+  {
+    "_id": "5c8a1f292f8fb814b56fa184",
+    "name": "Leo Gillespie",
+    "email": "test5@mail.ru",
+    "role": "user",
+    "photo": "https://sun9-58.userapi.com/c206724/v206724024/98677/443TusUyAEg.jpg",
+    "password": "123456"
+  },
+  {
+    "_id": "5c8a1f4e2f8fb814b56fa185",
+    "name": "Jennifer Hardy",
+    "email": "test6@mail.ru",
+    "role": "user",
+    "photo": "https://sun9-67.userapi.com/c836323/v836323953/3bb50/BO5Y8iFkC9A.jpg?ava=1",
+    "password": "123456"
+  },
+  {
+    "_id": "5c8a201e2f8fb814b56fa186",
+    "name": "Kate Hardy",
+    "email": "test7@mail.ru",
+    "role": "user",
+    "photo": "https://sun9-17.userapi.com/c639328/v639328082/4a9b4/43gbTo1hEOg.jpg?ava=1",
+    "password": "123456"
+  },
+  {
+    "_id": "5c8a20d32f8fb814b56fa187",
+    "name": "Mark Stout",
+    "email": "test8@mail.ru",
+    "role": "user",
+    "photo": "https://sun9-61.userapi.com/c622319/v622319033/442ee/Q8ee-az36p0.jpg?ava=1",
+    "password": "123456"
+  }
+]

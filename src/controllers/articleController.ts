@@ -7,7 +7,11 @@ export const getArticles = catchAsync(async (req: Request, res: Response, next: 
   const articles = await Article.find({});
 
   res.status(200).json({
-    articles
+    status: "success",
+    results: articles.length,
+    data: {
+      articles
+    }
   });
 });
 
@@ -20,7 +24,10 @@ export const getArticle = catchAsync(async (req: Request, res: Response, next: N
   }
 
   res.status(200).json({
-    article: article
+    status: "success",
+    data: {
+      article
+    }
   });
 });
 
@@ -30,6 +37,9 @@ export const createArticle = catchAsync(async (req: Request, res: Response, next
   const newArticle = await Article.create({ ...req.body, user: req.user });
 
   res.status(201).json({
-    article: newArticle
+    status: "success",
+    data: {
+      article: newArticle
+    }
   });
 });

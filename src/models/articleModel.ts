@@ -28,8 +28,7 @@ const articleSchema = new mongoose.Schema({
     default: false
   },
   user: {
-    // type: typeof mongoose.Schema.Types.ObjectId,
-    type: mongoose.Schema.ObjectId,
+    type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
   },
   createdAt: {
@@ -45,11 +44,22 @@ const articleSchema = new mongoose.Schema({
 }, {
   toJSON: {
     transform(doc, ret) {
-      ret.id = ret._id;
-      delete ret._id;
-      delete ret.__v
+      // ret.id = ret._id;
+      // delete ret._id;
+      // delete ret.__v
     },
   },
+});
+
+// Duplicate the ID field.
+articleSchema.virtual('id').get(function(){
+  //@ts-ignore
+  return this._id.toHexString();
+});
+
+// Ensure virtual fields are serialised.
+articleSchema.set('toJSON', {
+  virtuals: true
 });
 
 const Article = mongoose.model('Article', articleSchema);

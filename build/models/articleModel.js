@@ -32,8 +32,7 @@ const articleSchema = new mongoose_1.default.Schema({
         default: false
     },
     user: {
-        // type: typeof mongoose.Schema.Types.ObjectId,
-        type: mongoose_1.default.Schema.ObjectId,
+        type: mongoose_1.default.Schema.Types.ObjectId,
         ref: 'User'
     },
     createdAt: {
