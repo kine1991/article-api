@@ -40,8 +40,6 @@ const importData = async () => {
       const randomuserIdsIndex = Math.ceil(Math.random()*userIds.length);
       article.publisher = userIds[randomuserIdsIndex - 1];
       article.priority = Math.ceil(Math.random()*10);
-      // console.log('@@@',Math.ceil(Math.random()*authors.length))
-      // console.log('@@@2',authors[Math.ceil(Math.random()*authors.length)])
       article.author = authors[Math.ceil(Math.random()*authors.length - 1)];
     });
   
