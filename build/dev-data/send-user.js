@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-// select current directory, after npx ts-node send-user.ts
+// select current directory, after npx ts-node send-user.ts --import or npx ts-node send-user.ts --delete
 const fs_1 = __importDefault(require("fs"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const dotenv_1 = __importDefault(require("dotenv"));
@@ -20,8 +20,13 @@ mongoose_1.default
 const user = JSON.parse(fs_1.default.readFileSync('./user.json', 'utf-8'));
 const importData = () => {
     user.map(async (data) => {
-        const newUser = await userModel_1.default.create(data);
-        console.log('newUser', newUser);
+        try {
+            const newUser = await userModel_1.default.create(data);
+            console.log('newUser', newUser);
+        }
+        catch (error) {
+            console.log('error', error);
+        }
     });
 };
 // importData();
@@ -36,5 +41,9 @@ const deleteData = async () => {
     }
     process.exit();
 };
-deleteData();
-// importData();
+if (process.argv[2] === '--delete') {
+    deleteData();
+}
+else if (process.argv[2] === '--import') {
+    importData();
+}

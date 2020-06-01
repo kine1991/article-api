@@ -4,7 +4,10 @@ import catchAsync from '../utils/catchAsync';
 import { NotFoundError } from '../utils/errors';
 
 export const getArticles = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-  const articles = await Article.find({});
+  console.log('query', req.query);
+  // console.log('author', req.query.author);
+  // console.log('author2', req.query.author2);
+  const articles = await Article.find(req.query);
 
   res.status(200).json({
     status: "success",
@@ -40,6 +43,22 @@ export const createArticle = catchAsync(async (req: Request, res: Response, next
     status: "success",
     data: {
       article: newArticle
+    }
+  });
+});
+
+
+export const getFilter = catchAsync(async (req: Request, res: Response) => {
+  const category = await Article.distinct('category');
+  const author = await Article.distinct('author');
+  const priority = await Article.distinct('priority');
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      category,
+      author,
+      priority
     }
   });
 });

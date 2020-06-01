@@ -11,11 +11,15 @@ const articleSchema = new mongoose.Schema({
   },
   author: {
     type: String,
-    required: [true, 'Article can not be empty!']
+    required: [true, 'Author can not be empty!']
   },
   content: {
     type: String,
     required: [true, 'Content can not be empty!']
+  },
+  category: {
+    type: String,
+    default: 'Other'
   },
   priority: {
     type: Number,
@@ -27,7 +31,7 @@ const articleSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
-  user: {
+  publisher: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
   },

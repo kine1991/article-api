@@ -5,6 +5,7 @@ import bcrypt from 'bcryptjs';
 // const bcrypt = require('bcryptjs');
 
 export interface UserDoc extends mongoose.Document {
+  _id: string;
   name: string;
   email: string;
   photo?: string;

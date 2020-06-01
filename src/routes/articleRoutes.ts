@@ -10,6 +10,8 @@ router.route('/')
   .get(articleController.getArticles)
   .post(authController.protect, articleController.createArticle)
 
+router.route('/filter').get(articleController.getFilter);
+
 router.route('/:id')
   .get(articleController.getArticle)
 

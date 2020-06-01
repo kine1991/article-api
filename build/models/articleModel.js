@@ -15,11 +15,15 @@ const articleSchema = new mongoose_1.default.Schema({
     },
     author: {
         type: String,
-        required: [true, 'Article can not be empty!']
+        required: [true, 'Author can not be empty!']
     },
     content: {
         type: String,
         required: [true, 'Content can not be empty!']
+    },
+    category: {
+        type: String,
+        default: 'Other'
     },
     priority: {
         type: Number,
@@ -31,7 +35,7 @@ const articleSchema = new mongoose_1.default.Schema({
         type: Boolean,
         default: false
     },
-    user: {
+    publisher: {
         type: mongoose_1.default.Schema.Types.ObjectId,
         ref: 'User'
     },
@@ -48,11 +52,20 @@ const articleSchema = new mongoose_1.default.Schema({
 }, {
     toJSON: {
         transform(doc, ret) {
-            ret.id = ret._id;
-            delete ret._id;
-            delete ret.__v;
+            // ret.id = ret._id;
+            // delete ret._id;
+            // delete ret.__v
         },
     },
+});
+// Duplicate the ID field.
+articleSchema.virtual('id').get(function () {
+    //@ts-ignore
+    return this._id.toHexString();
+});
+// Ensure virtual fields are serialised.
+articleSchema.set('toJSON', {
+    virtuals: true
 });
 const Article = mongoose_1.default.model('Article', articleSchema);
 exports.default = Article;
