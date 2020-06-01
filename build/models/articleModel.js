@@ -49,14 +49,6 @@ const articleSchema = new mongoose_1.default.Schema({
     },
     imageUrl: String,
     imagesUrl: [String]
-}, {
-    toJSON: {
-        transform(doc, ret) {
-            // ret.id = ret._id;
-            // delete ret._id;
-            // delete ret.__v
-        },
-    },
 });
 // Duplicate the ID field.
 articleSchema.virtual('id').get(function () {

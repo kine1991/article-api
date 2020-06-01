@@ -8,10 +8,43 @@ const articleModel_1 = __importDefault(require("../models/articleModel"));
 const catchAsync_1 = __importDefault(require("../utils/catchAsync"));
 const errors_1 = require("../utils/errors");
 exports.getArticles = catchAsync_1.default(async (req, res, next) => {
-    console.log('query', req.query);
-    // console.log('author', req.query.author);
-    // console.log('author2', req.query.author2);
-    const articles = await articleModel_1.default.find(req.query);
+    // 1) Filtering
+    const queryObj = { ...req.query };
+    const excludedFields = ['page', 'sort', 'limit', 'fields'];
+    excludedFields.forEach(el => delete queryObj[el]);
+    let queryStr = JSON.stringify(queryObj);
+    queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, match => `$${match}`);
+    console.log('queryStr', queryStr);
+    let query = articleModel_1.default.find(JSON.parse(queryStr));
+    // 2) Sorting
+    if (req.query.sort) {
+        const sortBy = req.query.sort.split(',').join(' ');
+        // console.log('sortBy', sortBy);
+        query = query.sort(sortBy);
+    }
+    else {
+        query = query.sort('-createdAt');
+    }
+    // 3) Field limiting limiting
+    if (req.query.fields) {
+        const fields = req.query.fields.split(',').join(' ');
+    }
+    else {
+        query = query.select('-__v -content');
+    }
+    // Pagination
+    const page = req.query.page * 1 || 1;
+    const limit = req.query.limit * 1 || 20;
+    const skip = (page - 1) * limit;
+    query = query.skip(skip).limit(limit);
+    if (req.query.page) {
+        const numArticles = await articleModel_1.default.countDocuments();
+        if (skip > numArticles)
+            throw new errors_1.BadRequestError('This page does not exist', 404);
+    }
+    // 
+    const articles = await query;
+    // const articles = await Article.find(req.query).select('-content');
     res.status(200).json({
         status: "success",
         results: articles.length,
