@@ -30,6 +30,9 @@ router.route('/')
     .get(articleController.getArticles)
     .post(authController.protect, articleController.createArticle);
 router.route('/filter').get(articleController.getFilter);
+router.route('/count').get(articleController.getCountArticles);
+router.route('/category/:categoryName/:numberOfPage/:countOfPerPage?').get(articleController.getArticlesByCategory);
+// router.route('/category/:categoryName/:numberOfPage/:countOfPerPage').get(articleController.getArticlesByCategory);
 router.route('/:id')
     .get(articleController.getArticle);
 // router.get('/', (req, res) => {

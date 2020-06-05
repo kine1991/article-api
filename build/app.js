@@ -16,6 +16,15 @@ const articleRoutes_1 = __importDefault(require("./routes/articleRoutes"));
 const errorController_1 = __importDefault(require("./controllers/errorController"));
 const not_found_page_1 = require("./utils/errors/not-found-page");
 const app = express_1.default();
+// CORS
+// app.use(cors());
+app.use((req, res, next) => {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Access-Control-Allow-Credentials", "true");
+    res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+    res.setHeader("Access-Control-Allow-Methods", "GET, POST, PATCH, PUT, DELETE, OPTIONS");
+    next();
+});
 // 1) GLOBAL MIDDLEWARES
 // Set security HTTP headers
 app.use(helmet_1.default());
