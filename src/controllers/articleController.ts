@@ -38,8 +38,8 @@ export const getArticles = catchAsync(async (req: Request, res: Response) => {
   const limit = (<any>req.query.limit) * 1 || 20;
   const skip = (page - 1) * limit;
   query = query.skip(skip).limit(limit);
+  const numArticles = await Article.countDocuments();
   if (req.query.page) {
-    const numArticles = await Article.countDocuments();
     if (skip > numArticles) throw new BadRequestError('This page does not exist', 404);
   }
 
@@ -50,6 +50,7 @@ export const getArticles = catchAsync(async (req: Request, res: Response) => {
   res.status(200).json({
     status: "success",
     results: articles.length,
+    allResults: numArticles,
     data: {
       articles
     }
@@ -57,21 +58,19 @@ export const getArticles = catchAsync(async (req: Request, res: Response) => {
 });
 
 export const getArticlesByCategory = catchAsync(async (req: Request, res: Response) => {
-  console.log('req.query', req.params);
   const { categoryName, numberOfPage, countOfPerPage } = req.params;
+  
   const regexCategoryName = new RegExp(['^', categoryName, '$'].join(''), 'i')
-  let query = Article.find({ category: regexCategoryName }).select('-content -__v');
+  let query = Article.find({ category: regexCategoryName }).select('-content -__v').populate('publisher');
 
-  // console.log('req.params', req.params);
-  console.log('countOfPerPage', countOfPerPage);
   // Pagination
   const page = (<any>numberOfPage) * 1 || 1;
   const limit = (<any>countOfPerPage * 1) || 20;
   // const limit = 20;
   let skip = (page - 1) * limit;
   query = query.skip(skip).limit(limit);
+  const numArticles = await Article.countDocuments({ category: regexCategoryName });;
   if (req.query.page) {
-      const numArticles = await Article.countDocuments();
     if (skip > numArticles) throw new BadRequestError('This page does not exist', 404);
   }
 
@@ -79,6 +78,62 @@ export const getArticlesByCategory = catchAsync(async (req: Request, res: Respon
   res.status(200).json({
     status: 'success',
     results: articles.length,
+    allResults: numArticles,
+    data: {
+      articles
+    }
+  })
+});
+
+export const getArticlesByAuthor = catchAsync(async (req: Request, res: Response) => {
+  const { authorName, numberOfPage, countOfPerPage } = req.params;
+  
+  const regexAuthorName = new RegExp(['^', authorName, '$'].join(''), 'i')
+  let query = Article.find({ author: regexAuthorName }).select('-content -__v').populate('publisher');
+
+  // Pagination
+  const page = (<any>numberOfPage) * 1 || 1;
+  const limit = (<any>countOfPerPage * 1) || 20;
+  // const limit = 20;
+  let skip = (page - 1) * limit;
+  query = query.skip(skip).limit(limit);
+  const numArticles = await Article.countDocuments({ author: regexAuthorName });;
+  if (req.query.page) {
+    if (skip > numArticles) throw new BadRequestError('This page does not exist', 404);
+  }
+
+  const articles = await query;
+  res.status(200).json({
+    status: 'success',
+    results: articles.length,
+    allResults: numArticles,
+    data: {
+      articles
+    }
+  })
+});
+
+export const getArticlesByPublisher = catchAsync(async (req: Request, res: Response) => {
+  const { publisherId, numberOfPage, countOfPerPage } = req.params;
+  
+  let query = Article.find({ publisher: publisherId }).select('-content -__v');
+
+  // Pagination
+  const page = (<any>numberOfPage) * 1 || 1;
+  const limit = (<any>countOfPerPage * 1) || 20;
+  // const limit = 20;
+  let skip = (page - 1) * limit;
+  query = query.skip(skip).limit(limit);
+  const numArticles = await Article.countDocuments({ publisher: publisherId });;
+  if (req.query.page) {
+    if (skip > numArticles) throw new BadRequestError('This page does not exist', 404);
+  }
+
+  const articles = await query;
+  res.status(200).json({
+    status: 'success',
+    results: articles.length,
+    allResults: numArticles,
     data: {
       articles
     }
@@ -102,8 +157,6 @@ export const getArticle = catchAsync(async (req: Request, res: Response) => {
 });
 
 export const createArticle = catchAsync(async (req: Request, res: Response) => {
-  // console.log('@@@', req.body);
-  // console.log('@@@2', req.user);
   const newArticle = await Article.create({ ...req.body, user: req.user });
 
   res.status(201).json({
@@ -115,7 +168,6 @@ export const createArticle = catchAsync(async (req: Request, res: Response) => {
 });
 
 export const getCountArticles = catchAsync(async (req: Request, res: Response) => {
-  console.log('getCountArticles req.query', req.query);
   const count = await Article.countDocuments({});
 
   res.status(200).json({
@@ -125,16 +177,16 @@ export const getCountArticles = catchAsync(async (req: Request, res: Response) =
 
 
 export const getFilter = catchAsync(async (req: Request, res: Response) => {
-  const category = await Article.distinct('category');
-  const author = await Article.distinct('author');
-  const priority = await Article.distinct('priority');
+  const categories = await Article.distinct('category');
+  const authors = await Article.distinct('author');
+  const priorities = await Article.distinct('priority');
 
   res.status(200).json({
     status: 'success',
     data: {
-      category,
-      author,
-      priority
+      categories,
+      authors,
+      priorities
     }
   });
 });

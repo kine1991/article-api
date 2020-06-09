@@ -84,6 +84,49 @@ export const currentUser = (req: Request, res: Response) => {
   });
 };
 
+export const checkAuth = async (req: Request, res: Response) => {
+  try {
+    let user;
+    if(!req.cookies?.jwt) {
+      console.log('cookies', req.cookies?.jwt)
+      user = null;
+    } else {
+      const token = req.cookies.jwt
+      const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET!) as { id: string };
+
+      user = await User.findById(decoded.id)
+    }
+
+    res.json({
+      status: "success",
+      data: {
+        user: user
+      }
+    });
+  } catch (error) {
+    console.log('checkAuth - error: ', error);
+    res.json({
+      status: "success",
+      data: {
+        user: null
+      }
+    });
+  }
+};
+
+export const logout = (req: Request, res: Response) => {
+  res.cookie('jwt', '', {
+    expires: new Date(Date.now() + 10 * 100),
+    httpOnly: true
+  });
+  res.status(200).json({ 
+    status: 'success',
+    data: {
+      user: null
+    }
+  });
+};
+
 export const protect = async (req: Request, res: Response, next: NextFunction) => {
   try {
     if (!req.cookies?.jwt) {

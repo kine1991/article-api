@@ -5,8 +5,10 @@
   "main": "index.js",
   "scripts": {
     "start:build": "tsc -w",
-    "start:run": "nodemon build/server.js",
-    "start": "concurrently \"npm run start:build\" \"npm run start:run\"",
+    "start:run:prod": "NODE_ENV='production' nodemon build/server.js ",
+    "start:run:dev": "NODE_ENV='development' nodemon build/server.js ",
+    "start:prod": "concurrently \"npm run start:build\" \"npm run start:run:prod\"",
+    "start": "concurrently \"npm run start:build\" \"npm run start:run:dev\"",
     "send-user": "ts-node-dev src/dev-data/send-user.ts"
   },
   "keywords": [],

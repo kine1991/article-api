@@ -4,6 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const util_1 = require("util");
 const userModel_1 = __importDefault(require("../models/userModel"));
 const currentUser = async (req, res, next) => {
     var _a;
@@ -13,11 +14,12 @@ const currentUser = async (req, res, next) => {
     }
     const token = req.cookies.jwt;
     try {
-        const decoded = jsonwebtoken_1.default.verify('token', process.env.JWT_SECRET);
+        const decoded = await util_1.promisify(jsonwebtoken_1.default.verify)(token, process.env.JWT_SECRET);
         const user = await userModel_1.default.findById(decoded.id);
         req.user = user;
     }
     catch (error) {
+        console.log('currentUser - error:', error);
         req.user = null;
     }
     next();

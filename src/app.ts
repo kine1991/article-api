@@ -18,19 +18,27 @@ const app = express();
 
 // CORS
 // app.use(cors());
-app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Credentials", "true");
-  res.setHeader(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
-  );
-  res.setHeader(
-    "Access-Control-Allow-Methods",
-    "GET, POST, PATCH, PUT, DELETE, OPTIONS"
-  );
-  next();
-});
+if (process.env.NODE_ENV === 'development') {
+  app.use(cors({credentials: true, origin: 'http://localhost:4200'}));
+} else if (process.env.NODE_ENV === 'production') {
+  app.use(cors({credentials: true, origin: 'http://kron-articles.us-east-2.elasticbeanstalk.com'}));
+} else {
+  // delete
+  app.use(cors({credentials: true, origin: 'http://localhost:4200'}));
+}
+// app.use((req, res, next) => {
+//   res.setHeader("Access-Control-Allow-Origin", "http://localhost:4200");
+//   res.setHeader("Access-Control-Allow-Credentials", "true");
+//   res.setHeader(
+//     "Access-Control-Allow-Headers",
+//     "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+//   );
+//   res.setHeader(
+//     "Access-Control-Allow-Methods",
+//     "GET, POST, PATCH, PUT, DELETE, OPTIONS, "
+//   );
+//   next();
+// });
 
 // 1) GLOBAL MIDDLEWARES
 // Set security HTTP headers

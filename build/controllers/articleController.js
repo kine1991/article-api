@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getFilter = exports.getCountArticles = exports.createArticle = exports.getArticle = exports.getArticlesByCategory = exports.getArticles = void 0;
+exports.getFilter = exports.getCountArticles = exports.createArticle = exports.getArticle = exports.getArticlesByPublisher = exports.getArticlesByAuthor = exports.getArticlesByCategory = exports.getArticles = void 0;
 const articleModel_1 = __importDefault(require("../models/articleModel"));
 const catchAsync_1 = __importDefault(require("../utils/catchAsync"));
 const errors_1 = require("../utils/errors");
@@ -39,8 +39,8 @@ exports.getArticles = catchAsync_1.default(async (req, res) => {
     const limit = req.query.limit * 1 || 20;
     const skip = (page - 1) * limit;
     query = query.skip(skip).limit(limit);
+    const numArticles = await articleModel_1.default.countDocuments();
     if (req.query.page) {
-        const numArticles = await articleModel_1.default.countDocuments();
         if (skip > numArticles)
             throw new errors_1.BadRequestError('This page does not exist', 404);
     }
@@ -50,26 +50,25 @@ exports.getArticles = catchAsync_1.default(async (req, res) => {
     res.status(200).json({
         status: "success",
         results: articles.length,
+        allResults: numArticles,
         data: {
             articles
         }
     });
 });
 exports.getArticlesByCategory = catchAsync_1.default(async (req, res) => {
-    console.log('req.query', req.params);
     const { categoryName, numberOfPage, countOfPerPage } = req.params;
     const regexCategoryName = new RegExp(['^', categoryName, '$'].join(''), 'i');
-    let query = articleModel_1.default.find({ category: regexCategoryName }).select('-content -__v');
-    // console.log('req.params', req.params);
-    console.log('countOfPerPage', countOfPerPage);
+    let query = articleModel_1.default.find({ category: regexCategoryName }).select('-content -__v').populate('publisher');
     // Pagination
     const page = numberOfPage * 1 || 1;
     const limit = (countOfPerPage * 1) || 20;
     // const limit = 20;
     let skip = (page - 1) * limit;
     query = query.skip(skip).limit(limit);
+    const numArticles = await articleModel_1.default.countDocuments({ category: regexCategoryName });
+    ;
     if (req.query.page) {
-        const numArticles = await articleModel_1.default.countDocuments();
         if (skip > numArticles)
             throw new errors_1.BadRequestError('This page does not exist', 404);
     }
@@ -77,6 +76,58 @@ exports.getArticlesByCategory = catchAsync_1.default(async (req, res) => {
     res.status(200).json({
         status: 'success',
         results: articles.length,
+        allResults: numArticles,
+        data: {
+            articles
+        }
+    });
+});
+exports.getArticlesByAuthor = catchAsync_1.default(async (req, res) => {
+    const { authorName, numberOfPage, countOfPerPage } = req.params;
+    const regexAuthorName = new RegExp(['^', authorName, '$'].join(''), 'i');
+    let query = articleModel_1.default.find({ author: regexAuthorName }).select('-content -__v').populate('publisher');
+    // Pagination
+    const page = numberOfPage * 1 || 1;
+    const limit = (countOfPerPage * 1) || 20;
+    // const limit = 20;
+    let skip = (page - 1) * limit;
+    query = query.skip(skip).limit(limit);
+    const numArticles = await articleModel_1.default.countDocuments({ author: regexAuthorName });
+    ;
+    if (req.query.page) {
+        if (skip > numArticles)
+            throw new errors_1.BadRequestError('This page does not exist', 404);
+    }
+    const articles = await query;
+    res.status(200).json({
+        status: 'success',
+        results: articles.length,
+        allResults: numArticles,
+        data: {
+            articles
+        }
+    });
+});
+exports.getArticlesByPublisher = catchAsync_1.default(async (req, res) => {
+    const { publisherId, numberOfPage, countOfPerPage } = req.params;
+    let query = articleModel_1.default.find({ publisher: publisherId }).select('-content -__v');
+    // Pagination
+    const page = numberOfPage * 1 || 1;
+    const limit = (countOfPerPage * 1) || 20;
+    // const limit = 20;
+    let skip = (page - 1) * limit;
+    query = query.skip(skip).limit(limit);
+    const numArticles = await articleModel_1.default.countDocuments({ publisher: publisherId });
+    ;
+    if (req.query.page) {
+        if (skip > numArticles)
+            throw new errors_1.BadRequestError('This page does not exist', 404);
+    }
+    const articles = await query;
+    res.status(200).json({
+        status: 'success',
+        results: articles.length,
+        allResults: numArticles,
         data: {
             articles
         }
@@ -96,8 +147,6 @@ exports.getArticle = catchAsync_1.default(async (req, res) => {
     });
 });
 exports.createArticle = catchAsync_1.default(async (req, res) => {
-    // console.log('@@@', req.body);
-    // console.log('@@@2', req.user);
     const newArticle = await articleModel_1.default.create({ ...req.body, user: req.user });
     res.status(201).json({
         status: "success",
@@ -107,22 +156,21 @@ exports.createArticle = catchAsync_1.default(async (req, res) => {
     });
 });
 exports.getCountArticles = catchAsync_1.default(async (req, res) => {
-    console.log('getCountArticles req.query', req.query);
     const count = await articleModel_1.default.countDocuments({});
     res.status(200).json({
         count
     });
 });
 exports.getFilter = catchAsync_1.default(async (req, res) => {
-    const category = await articleModel_1.default.distinct('category');
-    const author = await articleModel_1.default.distinct('author');
-    const priority = await articleModel_1.default.distinct('priority');
+    const categories = await articleModel_1.default.distinct('category');
+    const authors = await articleModel_1.default.distinct('author');
+    const priorities = await articleModel_1.default.distinct('priority');
     res.status(200).json({
         status: 'success',
         data: {
-            category,
-            author,
-            priority
+            categories,
+            authors,
+            priorities
         }
     });
 });

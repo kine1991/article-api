@@ -12,8 +12,9 @@ router.route('/')
 
 router.route('/filter').get(articleController.getFilter);
 router.route('/count').get(articleController.getCountArticles);
-router.route('/category/:categoryName/:numberOfPage/:countOfPerPage?').get(articleController.getArticlesByCategory);
-// router.route('/category/:categoryName/:numberOfPage/:countOfPerPage').get(articleController.getArticlesByCategory);
+router.route('/category/:categoryName/:numberOfPage?/:countOfPerPage?').get(articleController.getArticlesByCategory);
+router.route('/author/:authorName/:numberOfPage?/:countOfPerPage?').get(articleController.getArticlesByAuthor);
+router.route('/publisher/:publisherId/:numberOfPage?/:countOfPerPage?').get(articleController.getArticlesByPublisher);
 
 router.route('/:id')
   .get(articleController.getArticle)

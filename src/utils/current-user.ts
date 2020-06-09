@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
+import { promisify } from 'util';
 
 import User, { UserDoc } from '../models/userModel';
 
@@ -20,15 +21,16 @@ const currentUser = async (req: Request, res: Response, next: NextFunction) => {
     req.user = null;
     return next();
   }
-
+  
   const token = req.cookies.jwt;
-
+  
   try {
-    const decoded = jwt.verify('token', process.env.JWT_SECRET!) as UserDecoded
+    const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET!) as UserDecoded;
     
     const user = await User.findById(decoded.id);
     req.user = user
   } catch (error) {
+    console.log('currentUser - error:', error);
     req.user = null;
   }
   next();

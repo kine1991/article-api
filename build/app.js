@@ -8,6 +8,7 @@ const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const morgan_1 = __importDefault(require("morgan"));
 const express_rate_limit_1 = __importDefault(require("express-rate-limit"));
 const helmet_1 = __importDefault(require("helmet"));
+const cors_1 = __importDefault(require("cors"));
 const express_mongo_sanitize_1 = __importDefault(require("express-mongo-sanitize"));
 // @ts-ignore
 const xss_clean_1 = __importDefault(require("xss-clean"));
@@ -18,13 +19,29 @@ const not_found_page_1 = require("./utils/errors/not-found-page");
 const app = express_1.default();
 // CORS
 // app.use(cors());
-app.use((req, res, next) => {
-    res.setHeader("Access-Control-Allow-Origin", "*");
-    res.setHeader("Access-Control-Allow-Credentials", "true");
-    res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
-    res.setHeader("Access-Control-Allow-Methods", "GET, POST, PATCH, PUT, DELETE, OPTIONS");
-    next();
-});
+if (process.env.NODE_ENV === 'development') {
+    app.use(cors_1.default({ credentials: true, origin: 'http://localhost:4200' }));
+}
+else if (process.env.NODE_ENV === 'production') {
+    app.use(cors_1.default({ credentials: true, origin: 'http://kron-articles.us-east-2.elasticbeanstalk.com' }));
+}
+else {
+    // delete
+    app.use(cors_1.default({ credentials: true, origin: 'http://localhost:4200' }));
+}
+// app.use((req, res, next) => {
+//   res.setHeader("Access-Control-Allow-Origin", "http://localhost:4200");
+//   res.setHeader("Access-Control-Allow-Credentials", "true");
+//   res.setHeader(
+//     "Access-Control-Allow-Headers",
+//     "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+//   );
+//   res.setHeader(
+//     "Access-Control-Allow-Methods",
+//     "GET, POST, PATCH, PUT, DELETE, OPTIONS, "
+//   );
+//   next();
+// });
 // 1) GLOBAL MIDDLEWARES
 // Set security HTTP headers
 app.use(helmet_1.default());
