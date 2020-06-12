@@ -35,7 +35,8 @@ router.route('/category/:categoryName/:numberOfPage?/:countOfPerPage?').get(arti
 router.route('/author/:authorName/:numberOfPage?/:countOfPerPage?').get(articleController.getArticlesByAuthor);
 router.route('/publisher/:publisherId/:numberOfPage?/:countOfPerPage?').get(articleController.getArticlesByPublisher);
 router.route('/:id')
-    .get(articleController.getArticle);
+    .get(articleController.getArticle)
+    .delete(authController.protect, articleController.deleteArticle);
 // router.get('/', (req, res) => {
 //   res.send('hi there! articles');
 // });
