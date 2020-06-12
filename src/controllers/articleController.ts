@@ -38,7 +38,7 @@ export const getArticles = catchAsync(async (req: Request, res: Response) => {
   const limit = (<any>req.query.limit) * 1 || 20;
   const skip = (page - 1) * limit;
   query = query.skip(skip).limit(limit);
-  const numArticles = await Article.countDocuments();
+  const numArticles = await Article.countDocuments(JSON.parse(queryStr));
   if (req.query.page) {
     if (skip > numArticles) throw new BadRequestError('This page does not exist', 404);
   }
@@ -116,7 +116,7 @@ export const getArticlesByAuthor = catchAsync(async (req: Request, res: Response
 export const getArticlesByPublisher = catchAsync(async (req: Request, res: Response) => {
   const { publisherId, numberOfPage, countOfPerPage } = req.params;
   
-  let query = Article.find({ publisher: publisherId }).select('-content -__v');
+  let query = Article.find({ publisher: publisherId }).select('-content -__v').populate('publisher');
 
   // Pagination
   const page = (<any>numberOfPage) * 1 || 1;
@@ -166,6 +166,15 @@ export const createArticle = catchAsync(async (req: Request, res: Response) => {
     }
   });
 });
+
+export const deleteArticle = catchAsync(async (req: Request, res: Response) => {
+  await Article.findByIdAndRemove(req.params.id);
+
+  res.status(204).json({
+    status: 'success',
+    data: null
+  });
+})
 
 export const getCountArticles = catchAsync(async (req: Request, res: Response) => {
   const count = await Article.countDocuments({});

@@ -62,6 +62,7 @@ exports.signUp = catchAsync_1.default(async (req, res, next) => {
         name: req.body.name,
         email: req.body.email,
         password: req.body.password,
+        photo: req.body.photo,
     });
     createSendToken(newUser, 201, res);
 });
@@ -74,11 +75,11 @@ exports.currentUser = (req, res) => {
     });
 };
 exports.checkAuth = async (req, res) => {
-    var _a, _b;
+    var _a;
     try {
         let user;
         if (!((_a = req.cookies) === null || _a === void 0 ? void 0 : _a.jwt)) {
-            console.log('cookies', (_b = req.cookies) === null || _b === void 0 ? void 0 : _b.jwt);
+            // console.log('cookies', req.cookies?.jwt)
             user = null;
         }
         else {
@@ -117,6 +118,7 @@ exports.logout = (req, res) => {
 };
 exports.protect = async (req, res, next) => {
     var _a;
+    console.log('cookies2', req.cookies);
     try {
         if (!((_a = req.cookies) === null || _a === void 0 ? void 0 : _a.jwt)) {
             next(new bad_request_error_1.BadRequestError('You are not logged in! Please log in to get access.', 401));

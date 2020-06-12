@@ -70,6 +70,7 @@ export const signUp = catchAsync(async (req: Request, res: Response, next: NextF
     name: req.body.name,
     email: req.body.email,
     password: req.body.password,
+    photo: req.body.photo,
   });
 
   createSendToken(newUser, 201, res);
@@ -88,7 +89,7 @@ export const checkAuth = async (req: Request, res: Response) => {
   try {
     let user;
     if(!req.cookies?.jwt) {
-      console.log('cookies', req.cookies?.jwt)
+      // console.log('cookies', req.cookies?.jwt)
       user = null;
     } else {
       const token = req.cookies.jwt
@@ -128,13 +129,13 @@ export const logout = (req: Request, res: Response) => {
 };
 
 export const protect = async (req: Request, res: Response, next: NextFunction) => {
+  console.log('cookies2', req.cookies)
   try {
     if (!req.cookies?.jwt) {
       next(new BadRequestError('You are not logged in! Please log in to get access.', 401));
     }
     const token = req.cookies.jwt;
     const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { id: string }
-  
     const currentUser = await User.findById(decoded.id);
 
     if (!currentUser) {

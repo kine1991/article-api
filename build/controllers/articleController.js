@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getFilter = exports.getCountArticles = exports.createArticle = exports.getArticle = exports.getArticlesByPublisher = exports.getArticlesByAuthor = exports.getArticlesByCategory = exports.getArticles = void 0;
+exports.getFilter = exports.getCountArticles = exports.deleteArticle = exports.createArticle = exports.getArticle = exports.getArticlesByPublisher = exports.getArticlesByAuthor = exports.getArticlesByCategory = exports.getArticles = void 0;
 const articleModel_1 = __importDefault(require("../models/articleModel"));
 const catchAsync_1 = __importDefault(require("../utils/catchAsync"));
 const errors_1 = require("../utils/errors");
@@ -39,7 +39,7 @@ exports.getArticles = catchAsync_1.default(async (req, res) => {
     const limit = req.query.limit * 1 || 20;
     const skip = (page - 1) * limit;
     query = query.skip(skip).limit(limit);
-    const numArticles = await articleModel_1.default.countDocuments();
+    const numArticles = await articleModel_1.default.countDocuments(JSON.parse(queryStr));
     if (req.query.page) {
         if (skip > numArticles)
             throw new errors_1.BadRequestError('This page does not exist', 404);
@@ -110,7 +110,7 @@ exports.getArticlesByAuthor = catchAsync_1.default(async (req, res) => {
 });
 exports.getArticlesByPublisher = catchAsync_1.default(async (req, res) => {
     const { publisherId, numberOfPage, countOfPerPage } = req.params;
-    let query = articleModel_1.default.find({ publisher: publisherId }).select('-content -__v');
+    let query = articleModel_1.default.find({ publisher: publisherId }).select('-content -__v').populate('publisher');
     // Pagination
     const page = numberOfPage * 1 || 1;
     const limit = (countOfPerPage * 1) || 20;
@@ -153,6 +153,13 @@ exports.createArticle = catchAsync_1.default(async (req, res) => {
         data: {
             article: newArticle
         }
+    });
+});
+exports.deleteArticle = catchAsync_1.default(async (req, res) => {
+    await articleModel_1.default.findByIdAndRemove(req.params.id);
+    res.status(204).json({
+        status: 'success',
+        data: null
     });
 });
 exports.getCountArticles = catchAsync_1.default(async (req, res) => {
