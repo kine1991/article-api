@@ -48,7 +48,7 @@ export const getArticles = catchAsync(async (req: Request, res: Response) => {
   // const articles = await Article.find(req.query).select('-content');
 
   res.status(200).json({
-    status: "success",
+    status: 'success',
     results: articles.length,
     allResults: numArticles,
     data: {
@@ -149,7 +149,7 @@ export const getArticle = catchAsync(async (req: Request, res: Response) => {
   }
 
   res.status(200).json({
-    status: "success",
+    status: 'success',
     data: {
       article
     }
@@ -157,14 +157,29 @@ export const getArticle = catchAsync(async (req: Request, res: Response) => {
 });
 
 export const createArticle = catchAsync(async (req: Request, res: Response) => {
-  const newArticle = await Article.create({ ...req.body, user: req.user });
+  console.log('req.user@', req.user)
+  const newArticle = await Article.create({ ...req.body, publisher: req.user?._id });
 
   res.status(201).json({
-    status: "success",
+    status: 'success',
     data: {
       article: newArticle
     }
   });
+});
+
+export const updateArticle = catchAsync(async (req: Request, res: Response) => {
+  const article = await Article.findByIdAndUpdate(req.params.id, req.body, {
+    runValidators: true,
+    new: true
+  });
+
+  res.send(200).json({
+    status: 'success',
+    data: {
+      article
+    }
+  })
 });
 
 export const deleteArticle = catchAsync(async (req: Request, res: Response) => {

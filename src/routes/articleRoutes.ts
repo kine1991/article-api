@@ -18,6 +18,7 @@ router.route('/publisher/:publisherId/:numberOfPage?/:countOfPerPage?').get(arti
 
 router.route('/:id')
   .get(articleController.getArticle)
+  .patch(authController.protect, articleController.updateArticle)
   .delete(authController.protect, articleController.deleteArticle)
 
 // router.get('/', (req, res) => {

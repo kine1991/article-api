@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getFilter = exports.getCountArticles = exports.deleteArticle = exports.createArticle = exports.getArticle = exports.getArticlesByPublisher = exports.getArticlesByAuthor = exports.getArticlesByCategory = exports.getArticles = void 0;
+exports.getFilter = exports.getCountArticles = exports.deleteArticle = exports.updateArticle = exports.createArticle = exports.getArticle = exports.getArticlesByPublisher = exports.getArticlesByAuthor = exports.getArticlesByCategory = exports.getArticles = void 0;
 const articleModel_1 = __importDefault(require("../models/articleModel"));
 const catchAsync_1 = __importDefault(require("../utils/catchAsync"));
 const errors_1 = require("../utils/errors");
@@ -48,7 +48,7 @@ exports.getArticles = catchAsync_1.default(async (req, res) => {
     const articles = await query;
     // const articles = await Article.find(req.query).select('-content');
     res.status(200).json({
-        status: "success",
+        status: 'success',
         results: articles.length,
         allResults: numArticles,
         data: {
@@ -140,18 +140,32 @@ exports.getArticle = catchAsync_1.default(async (req, res) => {
         throw new errors_1.NotFoundError();
     }
     res.status(200).json({
-        status: "success",
+        status: 'success',
         data: {
             article
         }
     });
 });
 exports.createArticle = catchAsync_1.default(async (req, res) => {
-    const newArticle = await articleModel_1.default.create({ ...req.body, user: req.user });
+    var _a;
+    console.log('req.user@', req.user);
+    const newArticle = await articleModel_1.default.create({ ...req.body, publisher: (_a = req.user) === null || _a === void 0 ? void 0 : _a._id });
     res.status(201).json({
-        status: "success",
+        status: 'success',
         data: {
             article: newArticle
+        }
+    });
+});
+exports.updateArticle = catchAsync_1.default(async (req, res) => {
+    const article = await articleModel_1.default.findByIdAndUpdate(req.params.id, req.body, {
+        runValidators: true,
+        new: true
+    });
+    res.send(200).json({
+        status: 'success',
+        data: {
+            article
         }
     });
 });
