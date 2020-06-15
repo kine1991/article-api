@@ -129,7 +129,7 @@ export const logout = (req: Request, res: Response) => {
 };
 
 export const protect = async (req: Request, res: Response, next: NextFunction) => {
-  console.log('cookies2', req.cookies)
+  // console.log('cookies2', req.cookies)
   try {
     if (!req.cookies?.jwt) {
       next(new BadRequestError('You are not logged in! Please log in to get access.', 401));

@@ -118,7 +118,7 @@ exports.logout = (req, res) => {
 };
 exports.protect = async (req, res, next) => {
     var _a;
-    console.log('cookies2', req.cookies);
+    // console.log('cookies2', req.cookies)
     try {
         if (!((_a = req.cookies) === null || _a === void 0 ? void 0 : _a.jwt)) {
             next(new bad_request_error_1.BadRequestError('You are not logged in! Please log in to get access.', 401));

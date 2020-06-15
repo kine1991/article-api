@@ -11,7 +11,7 @@ export const getArticles = catchAsync(async (req: Request, res: Response) => {
 
   let queryStr = JSON.stringify(queryObj);
   queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, match => `$${match}`);
-  console.log('queryStr', queryStr);
+  // console.log('queryStr', queryStr);
 
   let query = Article.find(JSON.parse(queryStr)).populate('publisher');
 
@@ -26,7 +26,7 @@ export const getArticles = catchAsync(async (req: Request, res: Response) => {
 
   // 3) Field limit limiting
   if (req.query.fields) {
-    console.log('req.query.fields', req.query.fields);
+    // console.log('req.query.fields', req.query.fields);
     const fields = (req.query.fields as string).split(',').join(' ');
     query = query.select(`-__v ${fields}`);
   } else {
@@ -174,7 +174,7 @@ export const updateArticle = catchAsync(async (req: Request, res: Response) => {
     new: true
   });
 
-  res.send(200).json({
+  res.status(200).json({
     status: 'success',
     data: {
       article

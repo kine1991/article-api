@@ -14,7 +14,7 @@ exports.getArticles = catchAsync_1.default(async (req, res) => {
     excludedFields.forEach(el => delete queryObj[el]);
     let queryStr = JSON.stringify(queryObj);
     queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, match => `$${match}`);
-    console.log('queryStr', queryStr);
+    // console.log('queryStr', queryStr);
     let query = articleModel_1.default.find(JSON.parse(queryStr)).populate('publisher');
     // 2) Sorting
     if (req.query.sort) {
@@ -27,7 +27,7 @@ exports.getArticles = catchAsync_1.default(async (req, res) => {
     }
     // 3) Field limit limiting
     if (req.query.fields) {
-        console.log('req.query.fields', req.query.fields);
+        // console.log('req.query.fields', req.query.fields);
         const fields = req.query.fields.split(',').join(' ');
         query = query.select(`-__v ${fields}`);
     }
@@ -162,7 +162,7 @@ exports.updateArticle = catchAsync_1.default(async (req, res) => {
         runValidators: true,
         new: true
     });
-    res.send(200).json({
+    res.status(200).json({
         status: 'success',
         data: {
             article
