@@ -9,9 +9,10 @@ const router = express.Router();
 router.route('/').get(userController.getUsers);
 router.route('/sign-in').post(authController.signIn);
 router.route('/sign-up').post(authController.signUp);
-router.route('/update-me').patch(
+router.route('/me').patch(
   authController.protect,
   userController.uploadUserPhoto,
+  userController.resizeUserPhoto,
   userController.updateMe
 );
 router.route('/current-user').get(currentUserMiddleware, authController.currentUser);

@@ -3,23 +3,24 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateMe = exports.getUser = exports.getUsers = exports.uploadUserPhoto = void 0;
+exports.updateMe = exports.getUser = exports.getUsers = exports.resizeUserPhoto = exports.uploadUserPhoto = void 0;
 const multer_1 = __importDefault(require("multer"));
+const sharp_1 = __importDefault(require("sharp"));
 const errors_1 = require("../utils/errors");
 const userModel_1 = __importDefault(require("../models/userModel"));
 const catchAsync_1 = __importDefault(require("../utils/catchAsync"));
 // import { BadRequestError } from '../utils/errors/bad-request-error';
-const multerStorage = multer_1.default.diskStorage({
-    destination: (req, res, cb) => {
-        // cb(null, './uuu')
-        cb(null, 'build/public/img/users');
-    },
-    filename: (req, file, cb) => {
-        var _a;
-        const ext = file.mimetype.split('/')[1];
-        cb(null, `user-${(_a = req.user) === null || _a === void 0 ? void 0 : _a._id}-${Date.now()}.${ext}`);
-    }
-});
+// const multerStorage = multer.diskStorage({
+//   destination: (req, res, cb) => {
+//     // cb(null, './uuu')
+//     cb(null, 'build/public/img/users')
+//   },
+//   filename: (req, file, cb) => {
+//     const ext = file.mimetype.split('/')[1];
+//     cb(null, `user-${req.user?._id}-${Date.now()}.${ext}`);
+//   }
+// });
+const multerStorage = multer_1.default.memoryStorage();
 const multerFilter = (req, file, cb) => {
     if (file.mimetype.startsWith('image')) {
         cb(null, true);
@@ -34,6 +35,18 @@ const upload = multer_1.default({
 });
 // const upload = multer({ dest: '../../build/public/img/users' });
 exports.uploadUserPhoto = upload.single('photo');
+exports.resizeUserPhoto = catchAsync_1.default(async (req, res, next) => {
+    var _a;
+    if (!req.file)
+        return next();
+    req.file.filename = `user-${(_a = req.user) === null || _a === void 0 ? void 0 : _a._id}-${Date.now()}.jpeg`;
+    await sharp_1.default(req.file.buffer)
+        .resize(500, 500)
+        .toFormat('jpeg')
+        .jpeg({ quality: 90 })
+        .toFile(`build/public/img/users/${req.file.filename}`);
+    next();
+});
 exports.getUsers = catchAsync_1.default(async (req, res, next) => {
     const users = await userModel_1.default.find({});
     res.status(200).json({
@@ -61,10 +74,18 @@ exports.getUser = catchAsync_1.default(async (req, res, next) => {
 // photo - https://sun9-23.userapi.com/iF2G3PzlBo98CQWy6yQ_EwRVN1h2FnQNVpBSRw/78DA2RMPkZw.jpg?ava=1
 exports.updateMe = catchAsync_1.default(async (req, res) => {
     var _a;
-    console.log('req.file', req.file);
-    console.log('req.body', req.body);
-    // console.log('id', req.user?._id);
-    const user = await userModel_1.default.findByIdAndUpdate((_a = req.user) === null || _a === void 0 ? void 0 : _a._id, req.body, {
+    const filterObj = (obj, ...allowedFields) => {
+        const newObj = {};
+        Object.keys(obj).forEach(el => {
+            if (allowedFields.includes(el))
+                newObj[el] = obj[el];
+        });
+        return newObj;
+    };
+    const filteredBody = filterObj(req.body, 'name', 'email');
+    if (req.file)
+        filteredBody.photo = req.file.filename;
+    const user = await userModel_1.default.findByIdAndUpdate((_a = req.user) === null || _a === void 0 ? void 0 : _a._id, filteredBody, {
         new: true,
         runValidators: true
     });

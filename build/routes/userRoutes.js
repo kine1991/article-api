@@ -30,7 +30,7 @@ const router = express_1.default.Router();
 router.route('/').get(userController.getUsers);
 router.route('/sign-in').post(authController.signIn);
 router.route('/sign-up').post(authController.signUp);
-router.route('/update-me').patch(authController.protect, userController.uploadUserPhoto, userController.updateMe);
+router.route('/me').patch(authController.protect, userController.uploadUserPhoto, userController.resizeUserPhoto, userController.updateMe);
 router.route('/current-user').get(current_user_1.default, authController.currentUser);
 router.route('/check-auth').get(authController.checkAuth);
 router.route('/logout').get(authController.logout);
