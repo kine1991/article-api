@@ -45,7 +45,7 @@ export const resizeUserPhoto = catchAsync( async(req: Request, res: Response, ne
     .resize(500, 500)
     .toFormat('jpeg')
     .jpeg({ quality: 90 })
-    .toFile(`build/public/img/users/${req.file.filename}`);
+    .toFile(`build/public/images/users/${req.file.filename}`);
 
   next();
 });
@@ -80,7 +80,7 @@ export const getUser = catchAsync(async (req: Request, res: Response, next: Next
 
 // photo - https://sun9-23.userapi.com/iF2G3PzlBo98CQWy6yQ_EwRVN1h2FnQNVpBSRw/78DA2RMPkZw.jpg?ava=1
 export const updateMe = catchAsync(async (req: Request, res: Response) => {
-
+  const url = req.protocol + '://' + req.get('host');
   const filterObj = (obj: any, ...allowedFields: any) => {
     const newObj: any = {};
     Object.keys(obj).forEach(el => {
@@ -90,7 +90,7 @@ export const updateMe = catchAsync(async (req: Request, res: Response) => {
   };
 
   const filteredBody: any = filterObj(req.body, 'name', 'email');
-  if(req.file) filteredBody.photo = req.file.filename;
+  if(req.file) filteredBody.photo = url + '/images/users/' + req.file.filename;
 
   const user = await User.findByIdAndUpdate(req.user?._id, filteredBody, {
     new: true,

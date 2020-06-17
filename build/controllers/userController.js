@@ -44,7 +44,7 @@ exports.resizeUserPhoto = catchAsync_1.default(async (req, res, next) => {
         .resize(500, 500)
         .toFormat('jpeg')
         .jpeg({ quality: 90 })
-        .toFile(`build/public/img/users/${req.file.filename}`);
+        .toFile(`build/public/images/users/${req.file.filename}`);
     next();
 });
 exports.getUsers = catchAsync_1.default(async (req, res, next) => {
@@ -74,6 +74,7 @@ exports.getUser = catchAsync_1.default(async (req, res, next) => {
 // photo - https://sun9-23.userapi.com/iF2G3PzlBo98CQWy6yQ_EwRVN1h2FnQNVpBSRw/78DA2RMPkZw.jpg?ava=1
 exports.updateMe = catchAsync_1.default(async (req, res) => {
     var _a;
+    const url = req.protocol + '://' + req.get('host');
     const filterObj = (obj, ...allowedFields) => {
         const newObj = {};
         Object.keys(obj).forEach(el => {
@@ -84,7 +85,7 @@ exports.updateMe = catchAsync_1.default(async (req, res) => {
     };
     const filteredBody = filterObj(req.body, 'name', 'email');
     if (req.file)
-        filteredBody.photo = req.file.filename;
+        filteredBody.photo = url + '/images/users/' + req.file.filename;
     const user = await userModel_1.default.findByIdAndUpdate((_a = req.user) === null || _a === void 0 ? void 0 : _a._id, filteredBody, {
         new: true,
         runValidators: true
