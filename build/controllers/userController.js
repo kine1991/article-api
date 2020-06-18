@@ -83,7 +83,7 @@ exports.updateMe = catchAsync_1.default(async (req, res) => {
         });
         return newObj;
     };
-    const filteredBody = filterObj(req.body, 'name', 'email');
+    const filteredBody = filterObj(req.body, 'name', 'email', 'photo');
     if (req.file)
         filteredBody.photo = url + '/images/users/' + req.file.filename;
     const user = await userModel_1.default.findByIdAndUpdate((_a = req.user) === null || _a === void 0 ? void 0 : _a._id, filteredBody, {
