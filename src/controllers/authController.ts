@@ -148,7 +148,9 @@ export const protect = async (req: Request, res: Response, next: NextFunction) =
     if (error.name === 'JsonWebTokenError') {
       next(new BadRequestError('invalid token.', 401));
     }
-    next(new BadRequestError('Something went wrong', 500));
     // console.log('error@', error);
+    // console.log('error@@', error.name);
+
+    next(new BadRequestError('Something went wrong', 500));
   }
 };

@@ -5,7 +5,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
-const path_1 = __importDefault(require("path"));
 const morgan_1 = __importDefault(require("morgan"));
 const express_rate_limit_1 = __importDefault(require("express-rate-limit"));
 const helmet_1 = __importDefault(require("helmet"));
@@ -63,7 +62,7 @@ app.use('/api', limiter);
 app.use(express_1.default.json({ limit: '10kb' })); // for parsing application/json
 app.use(express_1.default.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
 // Serving static files
-app.use(express_1.default.static(path_1.default.join(__dirname, 'public')));
+// app.use(express.static(path.join(__dirname, 'public')));
 // cookie
 app.use(cookie_parser_1.default());
 // Data sanitization against NoSQL query injection

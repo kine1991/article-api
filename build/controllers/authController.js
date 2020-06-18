@@ -136,7 +136,8 @@ exports.protect = async (req, res, next) => {
         if (error.name === 'JsonWebTokenError') {
             next(new bad_request_error_1.BadRequestError('invalid token.', 401));
         }
-        next(new bad_request_error_1.BadRequestError('Something went wrong', 500));
         // console.log('error@', error);
+        // console.log('error@@', error.name);
+        next(new bad_request_error_1.BadRequestError('Something went wrong', 500));
     }
 };

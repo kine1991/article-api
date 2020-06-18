@@ -3,8 +3,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateMe = exports.getUser = exports.getUsers = exports.resizeUserPhoto = exports.uploadUserPhoto = void 0;
+exports.changePassword = exports.updateMe = exports.getUser = exports.getUsers = exports.resizeUserPhoto = exports.uploadUserPhoto = void 0;
 const multer_1 = __importDefault(require("multer"));
+const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const sharp_1 = __importDefault(require("sharp"));
 const errors_1 = require("../utils/errors");
 const userModel_1 = __importDefault(require("../models/userModel"));
@@ -90,6 +91,21 @@ exports.updateMe = catchAsync_1.default(async (req, res) => {
         new: true,
         runValidators: true
     });
+    res.status(200).json({
+        status: 'success',
+        data: {
+            user
+        }
+    });
+});
+exports.changePassword = catchAsync_1.default(async (req, res) => {
+    var _a;
+    const user = await userModel_1.default.findById((_a = req.user) === null || _a === void 0 ? void 0 : _a._id).select('+password');
+    const isCompare = await bcryptjs_1.default.compare(req.body.password, user === null || user === void 0 ? void 0 : user.password);
+    if (!isCompare)
+        throw new errors_1.BadRequestError(`Your current password is wrong`, 401);
+    user.password = req.body.newPassword;
+    await (user === null || user === void 0 ? void 0 : user.save());
     res.status(200).json({
         status: 'success',
         data: {

@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import mongoose from 'mongoose';
 import multer from 'multer';
+import bcrypt from 'bcryptjs';
 import sharp from 'sharp';
 
 import { NotFoundError, BadRequestError } from '../utils/errors';
@@ -104,4 +105,23 @@ export const updateMe = catchAsync(async (req: Request, res: Response) => {
       user
     }
   });
+});
+
+export const changePassword = catchAsync(async (req: Request, res: Response) => {
+
+  const user = await User.findById(req.user?._id).select('+password');
+
+  const isCompare = await bcrypt.compare(req.body.password, user?.password!);
+  if(!isCompare) throw new BadRequestError(`Your current password is wrong`, 401);
+
+  user!.password = req.body.newPassword
+  await user?.save();
+
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      user
+    }
+  })
 });
