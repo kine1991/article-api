@@ -90,6 +90,7 @@ export const updateMe = catchAsync(async (req: Request, res: Response) => {
     return newObj;
   };
 
+  
   const filteredBody: any = filterObj(req.body, 'name', 'email', 'photo');
   if(req.file) filteredBody.photo = url + '/images/users/' + req.file.filename;
 
@@ -114,7 +115,11 @@ export const changePassword = catchAsync(async (req: Request, res: Response) => 
   const isCompare = await bcrypt.compare(req.body.password, user?.password!);
   if(!isCompare) throw new BadRequestError(`Your current password is wrong`, 401);
 
-  user!.password = req.body.newPassword
+  if(req.body.newPassword !== req.body.newPasswordConfirm) throw new BadRequestError(`Your newPassword do not match newPasswordConfirm`, 401);
+  if(req.body.password === req.body.newPassword) throw new BadRequestError(`Your password should not match newPassword`, 401);
+
+  user!.password = req.body.newPassword;
+  user!.passwordConfirm = req.body.newPassword;
   await user?.save();
 
 

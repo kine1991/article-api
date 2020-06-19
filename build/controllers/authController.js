@@ -58,11 +58,16 @@ exports.signUp = catchAsync_1.default(async (req, res, next) => {
     if (existingUser) {
         throw new bad_request_error_1.BadRequestError('This email was already taken', 400);
     }
+    const url = req.protocol + '://' + req.get('host');
+    const defaultPhoto = `${url}/images/users/default.jpg`;
+    // console.log('filteredBody', filteredBody);
+    // filteredBody.photo = url + '/images/users/' + 'default.jpg';
     const newUser = await userModel_1.default.create({
         name: req.body.name,
         email: req.body.email,
         password: req.body.password,
-        photo: req.body.photo,
+        passwordConfirm: req.body.passwordConfirm,
+        photo: req.body.photo ? req.body.photo : defaultPhoto,
     });
     createSendToken(newUser, 201, res);
 });

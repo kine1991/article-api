@@ -21,7 +21,6 @@ const userSchema = new mongoose_1.default.Schema({
     },
     photo: {
         type: String,
-        default: 'default.jpg'
     },
     role: {
         type: String,
@@ -36,6 +35,7 @@ const userSchema = new mongoose_1.default.Schema({
     },
     passwordConfirm: {
         type: String,
+        required: [true, 'Please confirm your password'],
     },
     passwordChangedAt: Date,
     passwordResetToken: String,

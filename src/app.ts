@@ -65,7 +65,7 @@ app.use(express.json({ limit: '10kb' })); // for parsing application/json
 app.use(express.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
 
 // Serving static files
-// app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'public')));
 
 // cookie
 app.use(cookieParser())

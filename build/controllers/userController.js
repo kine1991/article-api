@@ -104,7 +104,12 @@ exports.changePassword = catchAsync_1.default(async (req, res) => {
     const isCompare = await bcryptjs_1.default.compare(req.body.password, user === null || user === void 0 ? void 0 : user.password);
     if (!isCompare)
         throw new errors_1.BadRequestError(`Your current password is wrong`, 401);
+    if (req.body.newPassword !== req.body.newPasswordConfirm)
+        throw new errors_1.BadRequestError(`Your newPassword do not match newPasswordConfirm`, 401);
+    if (req.body.password === req.body.newPassword)
+        throw new errors_1.BadRequestError(`Your password should not match newPassword`, 401);
     user.password = req.body.newPassword;
+    user.passwordConfirm = req.body.newPassword;
     await (user === null || user === void 0 ? void 0 : user.save());
     res.status(200).json({
         status: 'success',
