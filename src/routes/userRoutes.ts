@@ -1,4 +1,4 @@
-import express, { Request, Response, NextFunction } from 'express';
+import express from 'express';
 
 import * as authController from '../controllers/authController';
 import * as userController from '../controllers/userController';

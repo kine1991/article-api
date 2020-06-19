@@ -1,5 +1,4 @@
 import { Request, Response, NextFunction } from 'express';
-import mongoose from 'mongoose';
 import multer from 'multer';
 import bcrypt from 'bcryptjs';
 import sharp from 'sharp';

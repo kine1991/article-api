@@ -1,5 +1,5 @@
-import express, { Request, Response, NextFunction, ErrorRequestHandler, static } from 'express';
-import bodyParser from 'body-parser';
+import express, { Request, Response, NextFunction } from 'express';
+// import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import path from 'path';
 import morgan from 'morgan';
@@ -12,6 +12,7 @@ import xss from 'xss-clean';
 
 import userRouter from './routes/userRoutes';
 import articleRouter from './routes/articleRoutes';
+import commentRouter from './routes/commentRoutes';
 import globalErrorHandler from './controllers/errorController';
 import { NotFoundError } from './utils/errors/not-found-page';
 
@@ -79,6 +80,7 @@ app.use(xss());
 // ROUTES
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/articles', articleRouter);
+app.use('/api/v1/comments', commentRouter);
 
 app.all('*', async (req: Request, res: Response, next: NextFunction) => {
   next(new NotFoundError());

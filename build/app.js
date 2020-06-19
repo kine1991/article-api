@@ -4,6 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
+// import bodyParser from 'body-parser';
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const path_1 = __importDefault(require("path"));
 const morgan_1 = __importDefault(require("morgan"));
@@ -15,6 +16,7 @@ const express_mongo_sanitize_1 = __importDefault(require("express-mongo-sanitize
 const xss_clean_1 = __importDefault(require("xss-clean"));
 const userRoutes_1 = __importDefault(require("./routes/userRoutes"));
 const articleRoutes_1 = __importDefault(require("./routes/articleRoutes"));
+const commentRoutes_1 = __importDefault(require("./routes/commentRoutes"));
 const errorController_1 = __importDefault(require("./controllers/errorController"));
 const not_found_page_1 = require("./utils/errors/not-found-page");
 const app = express_1.default();
@@ -73,6 +75,7 @@ app.use(xss_clean_1.default());
 // ROUTES
 app.use('/api/v1/users', userRoutes_1.default);
 app.use('/api/v1/articles', articleRoutes_1.default);
+app.use('/api/v1/comments', commentRoutes_1.default);
 app.all('*', async (req, res, next) => {
     next(new not_found_page_1.NotFoundError());
 });
