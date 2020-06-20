@@ -21,8 +21,23 @@ const commentSchema = new mongoose_1.default.Schema({
         type: mongoose_1.default.Schema.Types.ObjectId,
         ref: 'Article',
         required: [true, 'Comment must belong to a article']
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now()
+    },
+    updatedAt: {
+        type: Date
     }
 });
 // commentSchema.index({ article });
+// commentSchema.pre(/^find/, function(next) {
+//   // @ts-ignore
+//   this.populate({
+//     path: 'user',
+//     select: 'name email photo'
+//   });
+//   next();
+// });
 const Comment = mongoose_1.default.model('Comment', commentSchema);
 exports.default = Comment;

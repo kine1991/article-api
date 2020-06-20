@@ -6,18 +6,12 @@ import * as authController from '../controllers/authController';
 const router = express.Router({ mergeParams: true });
 
 router.route('/')
-  .get(commentController.getComments)
-  .post(authController.protect, commentController.createComment);
-// /:articleId/comments/:commentId
+  .get(commentController.getComments) // work for both: - /comments/:commentId, - /articles/:articleId/comments/:commentId
+  .post(authController.protect, commentController.createComment); // work only: /articles/:articleId/comments/:commentId
+
 router.route('/:commentId')
-  .get(commentController.getComment)
-  .patch(commentController.updateComment)
-  .delete(commentController.deleteComment)
-
-// router.route('/create-article/:articleId')
-//   .post(authController.protect, commentController.createComment);
-
-// router.route('/edit-article/:articleId')
-//   .patch()
+  .get(commentController.getComment) // work for both: - /comments/:commentId, - /articles/:articleId/comments/:commentId
+  .patch(authController.protect, commentController.updateComment) // work only: /articles/:articleId/comments/:commentId
+  .delete(authController.protect, commentController.deleteComment) // work only: /articles/:articleId/comments/:commentId
 
 export default router;

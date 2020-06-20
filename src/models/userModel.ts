@@ -40,7 +40,7 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ['user', 'guide', 'lead-guide', 'admin'],
+    enum: ['user', 'admin', 'super-admin'],
     default: 'user'
   },
   password: {
@@ -70,13 +70,13 @@ const userSchema = new mongoose.Schema({
     select: false
   }
 }, {
-  toJSON: {
-    transform(doc, ret) {
-      ret.id = ret._id;
-      delete ret._id;
-      delete ret.__v
-    },
-  },
+  // toJSON: {
+  //   transform(doc, ret) {
+  //     ret.id = ret._id;
+  //     delete ret._id;
+  //     delete ret.__v
+  //   },
+  // },
 });
 
 // Duplicate the ID field.

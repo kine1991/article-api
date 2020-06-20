@@ -4,6 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createComment = exports.deleteComment = exports.updateComment = exports.getComment = exports.getComments = void 0;
+const errors_1 = require("../utils/errors");
 const commentModel_1 = __importDefault(require("../models/commentModel"));
 // import User from '../models/userModel';
 const catchAsync_1 = __importDefault(require("../utils/catchAsync"));
@@ -30,16 +31,35 @@ exports.getComment = catchAsync_1.default(async (req, res) => {
     });
 });
 exports.updateComment = catchAsync_1.default(async (req, res) => {
-    // const comment = await Comment.findById(req.params.commentId)
+    var _a;
+    const comment = await commentModel_1.default.findById(req.params.commentId)
+        .populate({ path: 'user', select: 'role name email photo' });
+    // if comment do not exists
+    if (!comment)
+        throw new errors_1.BadRequestError('This comment do not exists', 404);
+    // if comment do not belong to user
+    if ((comment === null || comment === void 0 ? void 0 : comment.user._id.toString()) !== ((_a = req.user) === null || _a === void 0 ? void 0 : _a._id.toString()))
+        throw new errors_1.BadRequestError('You do not have permission to perform this action', 403);
+    comment.comment = req.body.comment;
+    await (comment === null || comment === void 0 ? void 0 : comment.save());
     res.status(201).json({
         status: 'success',
         data: {
-            comment: 'updateComment'
+            comment
         }
     });
 });
 exports.deleteComment = catchAsync_1.default(async (req, res) => {
-    // const comment = await Comment.findById(req.params.commentId)
+    var _a;
+    const comment = await commentModel_1.default.findById(req.params.commentId)
+        .populate({ path: 'user', select: 'role name email photo' });
+    // if comment do not exists
+    if (!comment)
+        throw new errors_1.BadRequestError('This comment do not exists', 404);
+    // if comment do not belong to user
+    if ((comment === null || comment === void 0 ? void 0 : comment.user._id.toString()) !== ((_a = req.user) === null || _a === void 0 ? void 0 : _a._id.toString()))
+        throw new errors_1.BadRequestError('You do not have permission to perform this action', 403);
+    await commentModel_1.default.findByIdAndDelete(req.params.commentId);
     res.status(204).json({
         status: 'success'
     });

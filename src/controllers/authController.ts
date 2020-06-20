@@ -145,7 +145,6 @@ export const protect = async (req: Request, res: Response, next: NextFunction) =
     if (!currentUser) {
       next(new BadRequestError('The user belonging to this token does no longer exist.', 401));
     }
-
     req.user = currentUser;
     next();
   } catch (error) {
