@@ -2,16 +2,10 @@ import mongoose from 'mongoose';
 
 export interface CommentDoc extends mongoose.Document {
   _id: string;
-  name: string;
-  email: string;
-  photo?: string;
-  role?: string;
-  password?: string;
-  passwordConfirm?: string | undefined;
-  passwordChangedAt?: Date | number;
-  passwordResetToken?: string,
-  passwordResetExpires?: Date,
-  active?: boolean
+  id?: string;
+  comment: string;
+  user: string;
+  article: string;
 }
 
 // interface CommentModel extends mongoose.Model<CommentDoc> {

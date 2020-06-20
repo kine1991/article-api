@@ -2,9 +2,12 @@ import express from 'express';
 
 import * as articleController from '../controllers/articleController';
 import * as authController from '../controllers/authController';
+import commentRouter from '../routes/commentRoutes';
 
 
 const router = express.Router();
+
+router.use('/:articleId/comments', commentRouter);
 
 router.route('/')
   .get(articleController.getArticles)

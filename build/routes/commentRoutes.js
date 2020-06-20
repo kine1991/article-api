@@ -25,9 +25,17 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const commentController = __importStar(require("../controllers/commentController"));
 const authController = __importStar(require("../controllers/authController"));
-const router = express_1.default.Router();
-router.route('/').get(commentController.getComments);
-router.route('/:articleId')
-    .get(commentController.getComment)
+const router = express_1.default.Router({ mergeParams: true });
+router.route('/')
+    .get(commentController.getComments)
     .post(authController.protect, commentController.createComment);
+// /:articleId/comments/:commentId
+router.route('/:commentId')
+    .get(commentController.getComment)
+    .patch(commentController.updateComment)
+    .delete(commentController.deleteComment);
+// router.route('/create-article/:articleId')
+//   .post(authController.protect, commentController.createComment);
+// router.route('/edit-article/:articleId')
+//   .patch()
 exports.default = router;

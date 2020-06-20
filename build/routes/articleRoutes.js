@@ -25,7 +25,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const articleController = __importStar(require("../controllers/articleController"));
 const authController = __importStar(require("../controllers/authController"));
+const commentRoutes_1 = __importDefault(require("../routes/commentRoutes"));
 const router = express_1.default.Router();
+router.use('/:articleId/comments', commentRoutes_1.default);
 router.route('/')
     .get(articleController.getArticles)
     .post(authController.protect, articleController.createArticle);
