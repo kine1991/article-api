@@ -37,6 +37,15 @@ exports.getCommentsByArticle = catchAsync_1.default(async (req, res) => {
     excludedFields.forEach(el => delete queryObj[el]);
     // console.log('queryObj', queryObj);
     let query = commentModel_1.default.find(queryObj).populate({ path: 'user', select: 'role name email photo' });
+    // Sorting
+    if (req.query.sort) {
+        const sortBy = req.query.sort.split(',').join(' ');
+        // console.log('sortBy', sortBy);
+        query = query.sort(sortBy);
+    }
+    else {
+        query = query.sort('-createdAt');
+    }
     // Pagination
     const page = req.query.page * 1 || 1;
     const limit = req.query.limit * 1 || 20;

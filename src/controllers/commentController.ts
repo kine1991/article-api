@@ -36,6 +36,15 @@ export const getCommentsByArticle = catchAsync( async (req: Request, res: Respon
   // console.log('queryObj', queryObj);
   let query = Comment.find(queryObj).populate({ path: 'user', select: 'role name email photo' });
 
+  // Sorting
+  if (req.query.sort) {
+    const sortBy = (req.query.sort as string).split(',').join(' ');
+    // console.log('sortBy', sortBy);
+    query = query.sort(sortBy);
+  } else {
+    query = query.sort('-createdAt');
+  }
+
   // Pagination
   const page = (req.query.page as any) * 1 || 1;
   const limit = (req.query.limit as any) * 1 || 20;
