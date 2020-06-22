@@ -6,8 +6,8 @@ import * as authController from '../controllers/authController';
 const router = express.Router({ mergeParams: true });
 
 router.route('/')
-  .get(commentController.getCommentsByArticle) // work for only: - /articles/:articleId/comments/:commentId
-  .post(authController.protect, commentController.createComment); // work only: /articles/:articleId/comments/:commentId
+  .get(commentController.getCommentsByArticle) // work for only: - /articles/:articleId/comments
+  .post(authController.protect, commentController.createComment); // work only: /articles/:articleId/comments
 
 router.route('/all').get(commentController.getComments);
 

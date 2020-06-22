@@ -41,11 +41,10 @@ const articleSchema = new mongoose_1.default.Schema({
     },
     createdAt: {
         type: Date,
-        default: Date.now()
+        default: Date.now
     },
     updatedAt: {
-        type: Date,
-        default: Date.now()
+        type: Date
     },
     imageUrl: String,
     imagesUrl: [String]

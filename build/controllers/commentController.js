@@ -12,7 +12,8 @@ const catchAsync_1 = __importDefault(require("../utils/catchAsync"));
 const articleModel_1 = __importDefault(require("../models/articleModel"));
 exports.getComments = catchAsync_1.default(async (req, res) => {
     console.log('req.params - getComments', req.params);
-    const comments = await commentModel_1.default.find({});
+    const comments = await commentModel_1.default.find({})
+        .populate({ path: 'user', select: 'role name email photo' });
     res.status(200).json({
         status: 'success',
         results: comments.length,
@@ -30,11 +31,27 @@ exports.getCommentsByArticle = catchAsync_1.default(async (req, res) => {
     const isExistArticle = await articleModel_1.default.exists({ _id: req.params.articleId });
     if (!isExistArticle)
         throw new errors_1.BadRequestError('Article with routes articleId do not exists', 404);
-    const comments = await commentModel_1.default.find({ article: req.params.articleId });
+    // 1) Filtering
+    const queryObj = { ...req.query, article: req.params.articleId };
+    const excludedFields = ['page', 'sort', 'limit', 'fields'];
+    excludedFields.forEach(el => delete queryObj[el]);
+    // console.log('queryObj', queryObj);
+    let query = commentModel_1.default.find(queryObj).populate({ path: 'user', select: 'role name email photo' });
+    // Pagination
+    const page = req.query.page * 1 || 1;
+    const limit = req.query.limit * 1 || 20;
+    const skip = (page - 1) * limit;
+    query = query.skip(skip).limit(limit);
+    const numComments = await commentModel_1.default.countDocuments(queryObj);
+    if (req.query.page) {
+        if (skip > numComments)
+            throw new errors_1.BadRequestError('This page of comments does not exist', 404);
+    }
+    const comments = await query;
     res.status(200).json({
         status: 'success',
         results: comments.length,
-        allResults: 'allResults',
+        allResults: numComments,
         data: {
             comments
         }
@@ -42,7 +59,9 @@ exports.getCommentsByArticle = catchAsync_1.default(async (req, res) => {
 });
 exports.getComment = catchAsync_1.default(async (req, res) => {
     console.log('commentId - getComment', req.params.commentId);
-    const comment = await commentModel_1.default.findById(req.params.commentId);
+    const comment = await commentModel_1.default.findById(req.params.commentId)
+        .populate({ path: 'user', select: 'role name email photo' });
+    ;
     res.status(200).json({
         status: 'success',
         data: {

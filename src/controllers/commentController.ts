@@ -9,7 +9,8 @@ import Article from '../models/articleModel';
 
 export const getComments = catchAsync( async (req: Request, res: Response) => {
   console.log('req.params - getComments', req.params);
-  const comments = await Comment.find({});
+  const comments = await Comment.find({})
+    .populate({ path: 'user', select: 'role name email photo' });
 
   res.status(200).json({
     status: 'success',
@@ -27,12 +28,31 @@ export const getCommentsByArticle = catchAsync( async (req: Request, res: Respon
   const isExistArticle = await Article.exists({ _id: req.params.articleId});
   if(!isExistArticle) throw new BadRequestError('Article with routes articleId do not exists', 404);
 
-  const comments = await Comment.find({ article: req.params.articleId });
+  // 1) Filtering
+  const queryObj: any = { ...req.query, article: req.params.articleId };
+  const excludedFields = ['page', 'sort', 'limit', 'fields'];
+  excludedFields.forEach(el => delete queryObj[el]);
+
+  // console.log('queryObj', queryObj);
+  let query = Comment.find(queryObj).populate({ path: 'user', select: 'role name email photo' });
+
+  // Pagination
+  const page = (req.query.page as any) * 1 || 1;
+  const limit = (req.query.limit as any) * 1 || 20;
+  const skip = (page - 1) * limit;
+  query = query.skip(skip).limit(limit);
+
+  const numComments = await Comment.countDocuments(queryObj);
+  if(req.query.page) {
+    if(skip > numComments) throw new BadRequestError('This page of comments does not exist', 404);
+  }
+
+  const comments = await query;
 
   res.status(200).json({
     status: 'success',
     results: comments.length,
-    allResults: 'allResults',
+    allResults: numComments,
     data: {
       comments
     }
@@ -41,7 +61,8 @@ export const getCommentsByArticle = catchAsync( async (req: Request, res: Respon
 
 export const getComment = catchAsync( async (req: Request, res: Response) => {
   console.log('commentId - getComment', req.params.commentId);
-  const comment = await Comment.findById(req.params.commentId);
+  const comment = await Comment.findById(req.params.commentId)
+    .populate({ path: 'user', select: 'role name email photo' });;
 
   res.status(200).json({
     status: 'success',
