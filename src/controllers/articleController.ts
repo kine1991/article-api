@@ -214,3 +214,20 @@ export const getFilter = catchAsync(async (req: Request, res: Response) => {
     }
   });
 });
+
+export const likesArticle = catchAsync(async (req: Request, res: Response) => {
+  const article = await Article.findById(req.params.articleId);
+
+  // @ts-ignore
+  article.likes = [];
+  // article.likes.push(req.user?._id);
+
+  await article?.save();
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      a: 'a'
+    }
+  });
+});

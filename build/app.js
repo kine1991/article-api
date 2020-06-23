@@ -24,13 +24,16 @@ const app = express_1.default();
 // app.use(cors());
 if (process.env.NODE_ENV === 'development') {
     app.use(cors_1.default({ credentials: true, origin: 'http://localhost:4200' }));
+    console.log('***1', process.env.NODE_ENV);
 }
 else if (process.env.NODE_ENV === 'production') {
-    app.use(cors_1.default({ credentials: true, origin: 'http://kron-articles.us-east-2.elasticbeanstalk.com' }));
+    app.use(cors_1.default({ credentials: true, origin: 'http://kron-article.s3-website.us-east-2.amazonaws.com' }));
+    console.log('***2', process.env.NODE_ENV);
 }
 else {
     // delete
     app.use(cors_1.default({ credentials: true, origin: 'http://localhost:4200' }));
+    console.log('***3', process.env.NODE_ENV);
 }
 // app.use((req, res, next) => {
 //   res.setHeader("Access-Control-Allow-Origin", "http://localhost:4200");

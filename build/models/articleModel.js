@@ -39,12 +39,19 @@ const articleSchema = new mongoose_1.default.Schema({
         type: mongoose_1.default.Schema.Types.ObjectId,
         ref: 'User'
     },
+    likes: [
+        {
+            type: mongoose_1.default.Schema.Types.ObjectId,
+            ref: 'User'
+        }
+    ],
     createdAt: {
         type: Date,
-        default: Date.now
+        default: Date.now()
     },
     updatedAt: {
-        type: Date
+        type: Date,
+        default: Date.now()
     },
     imageUrl: String,
     imagesUrl: [String]

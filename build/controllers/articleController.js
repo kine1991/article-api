@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getFilter = exports.getCountArticles = exports.deleteArticle = exports.updateArticle = exports.createArticle = exports.getArticle = exports.getArticlesByPublisher = exports.getArticlesByAuthor = exports.getArticlesByCategory = exports.getArticles = void 0;
+exports.likesArticle = exports.getFilter = exports.getCountArticles = exports.deleteArticle = exports.updateArticle = exports.createArticle = exports.getArticle = exports.getArticlesByPublisher = exports.getArticlesByAuthor = exports.getArticlesByCategory = exports.getArticles = void 0;
 const articleModel_1 = __importDefault(require("../models/articleModel"));
 const catchAsync_1 = __importDefault(require("../utils/catchAsync"));
 const errors_1 = require("../utils/errors");
@@ -192,6 +192,19 @@ exports.getFilter = catchAsync_1.default(async (req, res) => {
             categories,
             authors,
             priorities
+        }
+    });
+});
+exports.likesArticle = catchAsync_1.default(async (req, res) => {
+    const article = await articleModel_1.default.findById(req.params.articleId);
+    // @ts-ignore
+    article.likes = [];
+    // article.likes.push(req.user?._id);
+    await (article === null || article === void 0 ? void 0 : article.save());
+    res.status(200).json({
+        status: 'success',
+        data: {
+            a: 'a'
         }
     });
 });

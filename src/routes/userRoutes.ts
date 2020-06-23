@@ -13,7 +13,7 @@ router.route('/change-password').patch(authController.protect, userController.ch
 router.route('/me').patch(
   authController.protect,
   userController.uploadUserPhoto,
-  userController.resizeUserPhoto,
+  // userController.resizeUserPhoto,
   userController.updateMe
 );
 router.route('/current-user').get(currentUserMiddleware, authController.currentUser);

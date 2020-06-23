@@ -1,24 +1,23 @@
 import { Request, Response, NextFunction } from 'express';
 import multer from 'multer';
 import bcrypt from 'bcryptjs';
-import sharp from 'sharp';
+// import sharp from 'sharp';
 
-import { NotFoundError, BadRequestError } from '../utils/errors';
+import { BadRequestError } from '../utils/errors';
 import User from '../models/userModel';
 import catchAsync from '../utils/catchAsync';
-// import { BadRequestError } from '../utils/errors/bad-request-error';
 
-// const multerStorage = multer.diskStorage({
-//   destination: (req, res, cb) => {
-//     // cb(null, './uuu')
-//     cb(null, 'build/public/img/users')
-//   },
-//   filename: (req, file, cb) => {
-//     const ext = file.mimetype.split('/')[1];
-//     cb(null, `user-${req.user?._id}-${Date.now()}.${ext}`);
-//   }
-// });
-const multerStorage = multer.memoryStorage();
+const multerStorage = multer.diskStorage({
+  destination: (req, res, cb) => {
+    // cb(null, './uuu')
+    cb(null, 'build/public/images/users')
+  },
+  filename: (req, file, cb) => {
+    const ext = file.mimetype.split('/')[1];
+    cb(null, `user-${req.user?._id}-${Date.now()}.${ext}`);
+  }
+});
+// const multerStorage = multer.memoryStorage();
 
 const multerFilter = (req: Request, file: any, cb: any) => {
   if(file.mimetype.startsWith('image')) {
@@ -36,22 +35,24 @@ const upload = multer({
 
 export const uploadUserPhoto = upload.single('photo');
 
-export const resizeUserPhoto = catchAsync( async(req: Request, res: Response, next: NextFunction) => {
-  if (!req.file) return next();
+// export const resizeUserPhoto = catchAsync( async(req: Request, res: Response, next: NextFunction) => {
+//   if (!req.file) return next();
 
-  req.file.filename = `user-${req.user?._id}-${Date.now()}.jpeg`;
+//   req.file.filename = `user-${req.user?._id}-${Date.now()}.jpeg`;
 
-  await sharp(req.file.buffer)
-    .resize(500, 500)
-    .toFormat('jpeg')
-    .jpeg({ quality: 90 })
-    .toFile(`build/public/images/users/${req.file.filename}`);
+//   await sharp(req.file.buffer)
+//     .resize(500, 500)
+//     .toFormat('jpeg')
+//     .jpeg({ quality: 90 })
+//     .toFile(`build/public/images/users/${req.file.filename}`);
 
-  next();
-});
+//   next();
+// });
 
 export const getUsers = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
   const users = await User.find({});
+  console.log('***users');
+  console.log(users);
 
   res.status(200).json({
     status: 'success',
