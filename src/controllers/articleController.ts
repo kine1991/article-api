@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import { Request, Response, NextFunction, query } from 'express';
 import Article from '../models/articleModel';
 import catchAsync from '../utils/catchAsync';
@@ -216,18 +217,26 @@ export const getFilter = catchAsync(async (req: Request, res: Response) => {
 });
 
 export const likesArticle = catchAsync(async (req: Request, res: Response) => {
+  const userId: any = req.user?._id;
+  if (!mongoose.Types.ObjectId.isValid(userId)) throw new BadRequestError(`User with this id: ${req.params.articleId} is incorrect`, 404);
   const article = await Article.findById(req.params.articleId);
-
   // @ts-ignore
-  article.likes = [];
-  // article.likes.push(req.user?._id);
+  if(!article?.likes) article?.likes = [];
+  if(article?.likes.includes(userId)) {
+    // @ts-ignore
+    article?.likes = article?.likes.filter(usrId => {
+      usrId !== userId;
+    });
+  } else {
+    article?.likes.unshift(userId)
+  }
 
   await article?.save();
 
   res.status(200).json({
     status: 'success',
     data: {
-      a: 'a'
+      article: article
     }
   });
 });

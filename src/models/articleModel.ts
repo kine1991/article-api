@@ -1,5 +1,31 @@
 import mongoose from 'mongoose';
 
+
+export interface ArticleDoc extends mongoose.Document {
+  _id: string;
+  id: string;
+  title: string;
+  author: string;
+  description: string;
+  content: string;
+  category: string;
+  likes: [any];
+  createdAt: Date;
+  updatedAt: Date;
+  imagesUrl?: [string];
+  imageUrl?: string;
+  publisher: Publisher | string;
+}
+
+interface Publisher {
+  role: string;
+  id: string;
+  _id: string;
+  name: string;
+  email: string;
+  photo: string;
+}
+
 const articleSchema = new mongoose.Schema({
   title: {
     type: String,
@@ -64,6 +90,6 @@ articleSchema.set('toJSON', {
   virtuals: true
 });
 
-const Article = mongoose.model('Article', articleSchema);
+const Article = mongoose.model<ArticleDoc>('Article', articleSchema);
 
 export default Article;

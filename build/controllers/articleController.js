@@ -4,6 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.likesArticle = exports.getFilter = exports.getCountArticles = exports.deleteArticle = exports.updateArticle = exports.createArticle = exports.getArticle = exports.getArticlesByPublisher = exports.getArticlesByAuthor = exports.getArticlesByCategory = exports.getArticles = void 0;
+const mongoose_1 = __importDefault(require("mongoose"));
 const articleModel_1 = __importDefault(require("../models/articleModel"));
 const catchAsync_1 = __importDefault(require("../utils/catchAsync"));
 const errors_1 = require("../utils/errors");
@@ -196,15 +197,28 @@ exports.getFilter = catchAsync_1.default(async (req, res) => {
     });
 });
 exports.likesArticle = catchAsync_1.default(async (req, res) => {
+    var _a;
+    const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a._id;
+    if (!mongoose_1.default.Types.ObjectId.isValid(userId))
+        throw new errors_1.BadRequestError(`User with this id: ${req.params.articleId} is incorrect`, 404);
     const article = await articleModel_1.default.findById(req.params.articleId);
     // @ts-ignore
-    article.likes = [];
-    // article.likes.push(req.user?._id);
+    if (!(article === null || article === void 0 ? void 0 : article.likes))
+        article === null || article === void 0 ? void 0 : article.likes = [];
+    if (article === null || article === void 0 ? void 0 : article.likes.includes(userId)) {
+        // @ts-ignore
+        article === null || article === void 0 ? void 0 : article.likes = article === null || article === void 0 ? void 0 : article.likes.filter(usrId => {
+            usrId !== userId;
+        });
+    }
+    else {
+        article === null || article === void 0 ? void 0 : article.likes.unshift(userId);
+    }
     await (article === null || article === void 0 ? void 0 : article.save());
     res.status(200).json({
         status: 'success',
         data: {
-            a: 'a'
+            article: article
         }
     });
 });
