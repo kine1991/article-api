@@ -208,7 +208,7 @@ exports.likesArticle = catchAsync_1.default(async (req, res) => {
     if (article === null || article === void 0 ? void 0 : article.likes.includes(userId)) {
         // @ts-ignore
         article === null || article === void 0 ? void 0 : article.likes = article === null || article === void 0 ? void 0 : article.likes.filter(usrId => {
-            usrId !== userId;
+            return usrId.toString() !== userId.toString();
         });
     }
     else {

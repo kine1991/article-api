@@ -225,7 +225,7 @@ export const likesArticle = catchAsync(async (req: Request, res: Response) => {
   if(article?.likes.includes(userId)) {
     // @ts-ignore
     article?.likes = article?.likes.filter(usrId => {
-      usrId !== userId;
+      return usrId.toString() !== userId.toString();
     });
   } else {
     article?.likes.unshift(userId)
