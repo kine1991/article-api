@@ -6,6 +6,9 @@ export interface CommentDoc extends mongoose.Document {
   comment: string;
   user: any;
   article: string;
+  createdAt: Date | number;
+  updatedAt: Date | number;
+  likes: [string];
 }
 
 interface User {
@@ -43,7 +46,12 @@ const commentSchema = new mongoose.Schema({
   },
   updatedAt: {
     type: Date
-  }
+  },
+  likes: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: [true, 'Like must belong to a user']
+  }]
 });
 
 // commentSchema.index({ article });

@@ -93,6 +93,7 @@ export const updateComment = catchAsync( async (req: Request, res: Response) => 
   if(comment?.user._id.toString() !== req.user?._id.toString()) throw new BadRequestError('You do not have permission to perform this action', 403);
 
   comment!.comment = req.body.comment;
+  comment!.updatedAt = Date.now();
   await comment?.save();
 
   res.status(201).json({
@@ -136,6 +137,30 @@ export const createComment = catchAsync( async (req: Request, res: Response) => 
     status: 'success',
     data: {
       comment
+    }
+  });
+});
+
+export const likesComment = catchAsync(async (req: Request, res: Response) => {
+  const userId: any = req.user?._id;
+  if (!mongoose.Types.ObjectId.isValid(userId)) throw new BadRequestError(`User with this id: ${req.params.commentId} is incorrect`, 404);
+  const comment = await Comment.findById(req.params.commentId);
+
+  if(comment?.likes.includes(userId)) {
+    // @ts-ignore
+    comment?.likes = comment?.likes.filter(usrId => {
+      return usrId.toString() !== userId.toString();
+    });
+  } else {
+    comment?.likes.unshift(userId)
+  }
+
+  await comment?.save();
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      comment: comment
     }
   });
 });

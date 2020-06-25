@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createComment = exports.deleteComment = exports.updateComment = exports.getComment = exports.getCommentsByArticle = exports.getComments = void 0;
+exports.likesComment = exports.createComment = exports.deleteComment = exports.updateComment = exports.getComment = exports.getCommentsByArticle = exports.getComments = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
 const errors_1 = require("../utils/errors");
 const commentModel_1 = __importDefault(require("../models/commentModel"));
@@ -91,6 +91,7 @@ exports.updateComment = catchAsync_1.default(async (req, res) => {
     if ((comment === null || comment === void 0 ? void 0 : comment.user._id.toString()) !== ((_a = req.user) === null || _a === void 0 ? void 0 : _a._id.toString()))
         throw new errors_1.BadRequestError('You do not have permission to perform this action', 403);
     comment.comment = req.body.comment;
+    comment.updatedAt = Date.now();
     await (comment === null || comment === void 0 ? void 0 : comment.save());
     res.status(201).json({
         status: 'success',
@@ -135,6 +136,29 @@ exports.createComment = catchAsync_1.default(async (req, res) => {
         status: 'success',
         data: {
             comment
+        }
+    });
+});
+exports.likesComment = catchAsync_1.default(async (req, res) => {
+    var _a;
+    const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a._id;
+    if (!mongoose_1.default.Types.ObjectId.isValid(userId))
+        throw new errors_1.BadRequestError(`User with this id: ${req.params.commentId} is incorrect`, 404);
+    const comment = await commentModel_1.default.findById(req.params.commentId);
+    if (comment === null || comment === void 0 ? void 0 : comment.likes.includes(userId)) {
+        // @ts-ignore
+        comment === null || comment === void 0 ? void 0 : comment.likes = comment === null || comment === void 0 ? void 0 : comment.likes.filter(usrId => {
+            return usrId.toString() !== userId.toString();
+        });
+    }
+    else {
+        comment === null || comment === void 0 ? void 0 : comment.likes.unshift(userId);
+    }
+    await (comment === null || comment === void 0 ? void 0 : comment.save());
+    res.status(200).json({
+        status: 'success',
+        data: {
+            comment: comment
         }
     });
 });

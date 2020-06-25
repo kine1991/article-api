@@ -13,7 +13,9 @@ router.route('/all').get(commentController.getComments);
 
 router.route('/:commentId')
   .get(commentController.getComment) // work for both: - /comments/:commentId, - /articles/:articleId/comments/:commentId
-  .patch(authController.protect, commentController.updateComment) // work only: /articles/:articleId/comments/:commentId
-  .delete(authController.protect, commentController.deleteComment) // work only: /articles/:articleId/comments/:commentId
+  .patch(authController.protect, commentController.updateComment) // work both:  - /comments/:commentId, - /articles/:articleId/comments/:commentId
+  .delete(authController.protect, commentController.deleteComment); // work both:  - /comments/:commentId, - /articles/:articleId/comments/:commentId
+
+router.route('/:commentId/like').get(authController.protect, commentController.likesComment);
 
 export default router;

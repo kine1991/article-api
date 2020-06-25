@@ -28,7 +28,12 @@ const commentSchema = new mongoose_1.default.Schema({
     },
     updatedAt: {
         type: Date
-    }
+    },
+    likes: [{
+            type: mongoose_1.default.Schema.Types.ObjectId,
+            ref: 'User',
+            required: [true, 'Like must belong to a user']
+        }]
 });
 // commentSchema.index({ article });
 // commentSchema.pre(/^find/, function(next) {
