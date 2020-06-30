@@ -143,7 +143,18 @@ export const getArticlesByPublisher = catchAsync(async (req: Request, res: Respo
 
 export const getArticle = catchAsync(async (req: Request, res: Response) => {
   const article = await Article.findById(req.params.id).populate('publisher');
+  // const article = await Article.findById(req.params.id).populate('publisher');
   // console.log('article@', article);
+
+  if(article?.count) {
+    // @ts-ignore
+    article?.count = article?.count + 1;
+  } else {
+    // @ts-ignore
+    article?.count = 1;
+  }
+
+  await article?.save();
 
   if (!article) {
     throw new NotFoundError();

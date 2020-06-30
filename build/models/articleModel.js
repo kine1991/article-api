@@ -53,6 +53,10 @@ const articleSchema = new mongoose_1.default.Schema({
         type: Date,
         default: Date.now()
     },
+    count: {
+        type: Number,
+        default: 0
+    },
     imageUrl: String,
     imagesUrl: [String]
 });

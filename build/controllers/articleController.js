@@ -136,7 +136,17 @@ exports.getArticlesByPublisher = catchAsync_1.default(async (req, res) => {
 });
 exports.getArticle = catchAsync_1.default(async (req, res) => {
     const article = await articleModel_1.default.findById(req.params.id).populate('publisher');
+    // const article = await Article.findById(req.params.id).populate('publisher');
     // console.log('article@', article);
+    if (article === null || article === void 0 ? void 0 : article.count) {
+        // @ts-ignore
+        article === null || article === void 0 ? void 0 : article.count = (article === null || article === void 0 ? void 0 : article.count) + 1;
+    }
+    else {
+        // @ts-ignore
+        article === null || article === void 0 ? void 0 : article.count = 1;
+    }
+    await (article === null || article === void 0 ? void 0 : article.save());
     if (!article) {
         throw new errors_1.NotFoundError();
     }

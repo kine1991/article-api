@@ -15,6 +15,7 @@ export interface ArticleDoc extends mongoose.Document {
   imagesUrl?: [string];
   imageUrl?: string;
   publisher: Publisher | string;
+  count: number;
 }
 
 interface Publisher {
@@ -74,6 +75,10 @@ const articleSchema = new mongoose.Schema({
   updatedAt: {
     type: Date,
     default: Date.now()
+  },
+  count: {
+    type: Number,
+    default: 0
   },
   imageUrl: String,
   imagesUrl: [String]
