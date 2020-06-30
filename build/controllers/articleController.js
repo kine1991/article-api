@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.likesArticle = exports.getFilter = exports.getCountArticles = exports.deleteArticle = exports.updateArticle = exports.createArticle = exports.getArticle = exports.getArticlesByPublisher = exports.getArticlesByAuthor = exports.getArticlesByCategory = exports.getArticles = void 0;
+exports.likesArticle = exports.getFilter = exports.getCountArticles = exports.deleteArticle = exports.updateArticle = exports.createArticle = exports.getArticle = exports.getArticlesByPublisher = exports.getArticlesByAuthor = exports.getArticlesByCategory = exports.getRandomArticles = exports.getArticles = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
 const articleModel_1 = __importDefault(require("../models/articleModel"));
 const catchAsync_1 = __importDefault(require("../utils/catchAsync"));
@@ -52,6 +52,35 @@ exports.getArticles = catchAsync_1.default(async (req, res) => {
         status: 'success',
         results: articles.length,
         allResults: numArticles,
+        data: {
+            articles
+        }
+    });
+});
+exports.getRandomArticles = catchAsync_1.default(async (req, res) => {
+    const allCount = await articleModel_1.default.countDocuments({});
+    const articles = await articleModel_1.default.aggregate([
+        { $sample: { size: 8 } },
+        { $project: { content: 0, __v: 0 } },
+        { $lookup: {
+                from: "users",
+                localField: "publisher",
+                foreignField: "_id",
+                as: "publisher"
+            } },
+        { $project: {
+                "publisher.__v": 0,
+                "publisher.email": 0,
+                "publisher.password": 0,
+                "publisher.photo": 0,
+                "publisher.active": 0,
+                "publisher.role": 0
+            } },
+    ]);
+    res.status(200).json({
+        status: 'success',
+        results: articles.length,
+        allResults: allCount,
         data: {
             articles
         }

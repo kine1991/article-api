@@ -51,7 +51,6 @@ export const uploadUserPhoto = upload.single('photo');
 
 export const getUsers = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
   const users = await User.find({});
-  console.log('***users');
   console.log(users);
 
   res.status(200).json({

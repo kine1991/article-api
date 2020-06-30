@@ -58,6 +58,38 @@ export const getArticles = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+export const getRandomArticles = catchAsync(async (req: Request, res: Response) => {
+  const allCount = await Article.countDocuments({});
+
+  const articles = await Article.aggregate([
+    { $sample: { size: 8 }}, 
+    { $project: { content: 0, __v: 0 }},
+    { $lookup: {
+      from: "users",
+      localField: "publisher",
+      foreignField: "_id",
+      as: "publisher"
+    }},
+    { $project: { 
+      "publisher.__v": 0,
+      "publisher.email": 0,
+      "publisher.password": 0,
+      "publisher.photo": 0,
+      "publisher.active": 0,
+      "publisher.role": 0
+    }},
+  ]);
+
+  res.status(200).json({
+    status: 'success',
+    results: articles.length,
+    allResults: allCount,
+    data: {
+      articles
+    }
+  });
+});
+
 export const getArticlesByCategory = catchAsync(async (req: Request, res: Response) => {
   const { categoryName, numberOfPage, countOfPerPage } = req.params;
   

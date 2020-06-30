@@ -48,7 +48,6 @@ exports.uploadUserPhoto = upload.single('photo');
 // });
 exports.getUsers = catchAsync_1.default(async (req, res, next) => {
     const users = await userModel_1.default.find({});
-    console.log('***users');
     console.log(users);
     res.status(200).json({
         status: 'success',
