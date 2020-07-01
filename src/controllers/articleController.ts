@@ -59,6 +59,73 @@ export const getArticles = catchAsync(async (req: Request, res: Response) => {
 });
 
 export const getRandomArticles = catchAsync(async (req: Request, res: Response) => {
+  const categories = await Article.distinct('category');
+  // get 4 random category
+  // const randomCategories;
+  function shuffle(array: any) {
+    let counter = array.length;
+
+    // While there are elements in the array
+    while (counter > 0) {
+        // Pick a random index
+        let index = Math.floor(Math.random() * counter);
+
+        // Decrease counter by 1
+        counter--;
+
+        // And swap the last element with it
+        let temp = array[counter];
+        array[counter] = array[index];
+        array[index] = temp;
+    }
+
+    return array;
+  }
+
+  const randomCategories = shuffle(categories);
+  randomCategories.splice(4);
+
+
+  const getArticlesByRandomCategory = async (categories: any) => {
+    const obj = await categories.reduce(async (acc: any, curr: any) => {
+      const accAsync = await acc;
+
+      accAsync[curr] = await Article.aggregate([
+        { $match : { category : curr } },
+        { $sample: { size: 4 }}, 
+        { $project: { content: 0, __v: 0 }},
+        { $lookup: {
+          from: "users",
+          localField: "publisher",
+          foreignField: "_id",
+          as: "publisher"
+        }},
+        { $project: { 
+          "publisher.__v": 0,
+          "publisher.email": 0,
+          "publisher.password": 0,
+          "publisher.photo": 0,
+          "publisher.active": 0,
+          "publisher.role": 0
+        }},
+      ]);;
+      return accAsync;
+    }, {});
+    return obj;
+  };
+
+  const articles = await getArticlesByRandomCategory(randomCategories);
+
+  res.status(200).json({
+    status: 'success',
+    results: articles.length,
+    data: {
+      articles: articles
+    }
+  });
+});
+
+export const getRandomArticles2 = catchAsync(async (req: Request, res: Response) => {
   const allCount = await Article.countDocuments({});
 
   const articles = await Article.aggregate([

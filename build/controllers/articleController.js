@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.likesArticle = exports.getFilter = exports.getCountArticles = exports.deleteArticle = exports.updateArticle = exports.createArticle = exports.getArticle = exports.getArticlesByPublisher = exports.getArticlesByAuthor = exports.getArticlesByCategory = exports.getRandomArticles = exports.getArticles = void 0;
+exports.likesArticle = exports.getFilter = exports.getCountArticles = exports.deleteArticle = exports.updateArticle = exports.createArticle = exports.getArticle = exports.getArticlesByPublisher = exports.getArticlesByAuthor = exports.getArticlesByCategory = exports.getRandomArticles2 = exports.getRandomArticles = exports.getArticles = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
 const articleModel_1 = __importDefault(require("../models/articleModel"));
 const catchAsync_1 = __importDefault(require("../utils/catchAsync"));
@@ -58,6 +58,63 @@ exports.getArticles = catchAsync_1.default(async (req, res) => {
     });
 });
 exports.getRandomArticles = catchAsync_1.default(async (req, res) => {
+    const categories = await articleModel_1.default.distinct('category');
+    // get 4 random category
+    // const randomCategories;
+    function shuffle(array) {
+        let counter = array.length;
+        // While there are elements in the array
+        while (counter > 0) {
+            // Pick a random index
+            let index = Math.floor(Math.random() * counter);
+            // Decrease counter by 1
+            counter--;
+            // And swap the last element with it
+            let temp = array[counter];
+            array[counter] = array[index];
+            array[index] = temp;
+        }
+        return array;
+    }
+    const randomCategories = shuffle(categories);
+    randomCategories.splice(4);
+    const getArticlesByRandomCategory = async (categories) => {
+        const obj = await categories.reduce(async (acc, curr) => {
+            const accAsync = await acc;
+            accAsync[curr] = await articleModel_1.default.aggregate([
+                { $match: { category: curr } },
+                { $sample: { size: 4 } },
+                { $project: { content: 0, __v: 0 } },
+                { $lookup: {
+                        from: "users",
+                        localField: "publisher",
+                        foreignField: "_id",
+                        as: "publisher"
+                    } },
+                { $project: {
+                        "publisher.__v": 0,
+                        "publisher.email": 0,
+                        "publisher.password": 0,
+                        "publisher.photo": 0,
+                        "publisher.active": 0,
+                        "publisher.role": 0
+                    } },
+            ]);
+            ;
+            return accAsync;
+        }, {});
+        return obj;
+    };
+    const articles = await getArticlesByRandomCategory(randomCategories);
+    res.status(200).json({
+        status: 'success',
+        results: articles.length,
+        data: {
+            articles: articles
+        }
+    });
+});
+exports.getRandomArticles2 = catchAsync_1.default(async (req, res) => {
     const allCount = await articleModel_1.default.countDocuments({});
     const articles = await articleModel_1.default.aggregate([
         { $sample: { size: 8 } },
