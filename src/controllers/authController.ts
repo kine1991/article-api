@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import jwt, { decode } from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 import bcript from 'bcryptjs';
 import { promisify } from 'util';
 

@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { Request, Response, NextFunction, query } from 'express';
+import { Request, Response } from 'express';
 import Article from '../models/articleModel';
 import catchAsync from '../utils/catchAsync';
 import { NotFoundError, BadRequestError } from '../utils/errors';
@@ -118,7 +118,6 @@ export const getRandomArticles = catchAsync(async (req: Request, res: Response) 
 
   res.status(200).json({
     status: 'success',
-    results: articles.length,
     data: {
       articles: articles
     }
@@ -280,7 +279,11 @@ export const createArticle = catchAsync(async (req: Request, res: Response) => {
 });
 
 export const updateArticle = catchAsync(async (req: Request, res: Response) => {
-  const article = await Article.findByIdAndUpdate(req.params.id, req.body, {
+  const article = await Article.findById(req.params.id);
+
+  if(req.user?._id.toString() !== article?.publisher.toString())  throw new BadRequestError(`You do not have any permission to edit this article`, 401);
+
+  const editedArticle = await Article.findByIdAndUpdate(req.params.id, req.body, {
     runValidators: true,
     new: true
   });
@@ -288,13 +291,19 @@ export const updateArticle = catchAsync(async (req: Request, res: Response) => {
   res.status(200).json({
     status: 'success',
     data: {
-      article
+      article: editedArticle
     }
   })
 });
 
 export const deleteArticle = catchAsync(async (req: Request, res: Response) => {
-  await Article.findByIdAndRemove(req.params.id);
+  const article = await Article.findById(req.params.id);
+
+  if(req.user?.role === 'admin' || req.user?._id.toString() === article?.publisher.toString()) {
+    await Article.findByIdAndRemove(req.params.id);
+  } else {
+    throw new BadRequestError(`You do not have any permission to delete this article`, 401);
+  }
 
   res.status(204).json({
     status: 'success',

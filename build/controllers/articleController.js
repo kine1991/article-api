@@ -108,7 +108,6 @@ exports.getRandomArticles = catchAsync_1.default(async (req, res) => {
     const articles = await getArticlesByRandomCategory(randomCategories);
     res.status(200).json({
         status: 'success',
-        results: articles.length,
         data: {
             articles: articles
         }
@@ -255,19 +254,30 @@ exports.createArticle = catchAsync_1.default(async (req, res) => {
     });
 });
 exports.updateArticle = catchAsync_1.default(async (req, res) => {
-    const article = await articleModel_1.default.findByIdAndUpdate(req.params.id, req.body, {
+    var _a;
+    const article = await articleModel_1.default.findById(req.params.id);
+    if (((_a = req.user) === null || _a === void 0 ? void 0 : _a._id.toString()) !== (article === null || article === void 0 ? void 0 : article.publisher.toString()))
+        throw new errors_1.BadRequestError(`You do not have any permission to edit this article`, 401);
+    const editedArticle = await articleModel_1.default.findByIdAndUpdate(req.params.id, req.body, {
         runValidators: true,
         new: true
     });
     res.status(200).json({
         status: 'success',
         data: {
-            article
+            article: editedArticle
         }
     });
 });
 exports.deleteArticle = catchAsync_1.default(async (req, res) => {
-    await articleModel_1.default.findByIdAndRemove(req.params.id);
+    var _a, _b;
+    const article = await articleModel_1.default.findById(req.params.id);
+    if (((_a = req.user) === null || _a === void 0 ? void 0 : _a.role) === 'admin' || ((_b = req.user) === null || _b === void 0 ? void 0 : _b._id.toString()) === (article === null || article === void 0 ? void 0 : article.publisher.toString())) {
+        await articleModel_1.default.findByIdAndRemove(req.params.id);
+    }
+    else {
+        throw new errors_1.BadRequestError(`You do not have any permission to delete this article`, 401);
+    }
     res.status(204).json({
         status: 'success',
         data: null
